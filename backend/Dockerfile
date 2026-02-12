@@ -1,22 +1,22 @@
-# Multi-stage build for backend
+# Multi-stage build for backend (monorepo-aware)
+# Build context should be repository root
 FROM node:20-alpine AS builder
 
 WORKDIR /app
 
-# Copy package files
+# Copy root workspace files
 COPY package*.json ./
-COPY tsconfig.json ./
+COPY backend/package*.json ./backend/
 
-# Install dependencies
-RUN npm ci
+# Install all dependencies (workspace-aware)
+RUN npm install
 
-# Copy source code
-COPY . .
+# Copy backend source
+COPY backend ./backend
 
-# Generate Prisma client
+# Build backend
+WORKDIR /app/backend
 RUN npx prisma generate
-
-# Build TypeScript
 RUN npm run build
 
 # Production stage
@@ -25,19 +25,19 @@ FROM node:20-alpine
 WORKDIR /app
 
 # Copy package files
-COPY package*.json ./
+COPY --from=builder /app/backend/package*.json ./
 
 # Install production dependencies only
-RUN npm ci --only=production
+RUN npm install --only=production
 
-# Copy Prisma schema for runtime
-COPY prisma ./prisma
+# Copy Prisma schema
+COPY --from=builder /app/backend/prisma ./prisma
 
 # Generate Prisma client
 RUN npx prisma generate
 
-# Copy built files from builder
-COPY --from=builder /app/dist ./dist
+# Copy built files
+COPY --from=builder /app/backend/dist ./dist
 
 # Expose port
 EXPOSE 3000

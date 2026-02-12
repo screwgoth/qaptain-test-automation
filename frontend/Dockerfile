@@ -1,28 +1,31 @@
-# Multi-stage build for frontend
+# Multi-stage build for frontend (monorepo-aware)
+# Build context should be repository root
 FROM node:20-alpine AS builder
 
 WORKDIR /app
 
-# Copy package files
+# Copy root workspace files
 COPY package*.json ./
+COPY frontend/package*.json ./frontend/
 
-# Install dependencies
-RUN npm ci
+# Install all dependencies (workspace-aware)
+RUN npm install
 
-# Copy source code
-COPY . .
+# Copy frontend source
+COPY frontend ./frontend
 
-# Build production bundle
+# Build frontend
+WORKDIR /app/frontend
 RUN npm run build
 
 # Production stage with nginx
 FROM nginx:alpine
 
 # Copy built files to nginx
-COPY --from=builder /app/dist /usr/share/nginx/html
+COPY --from=builder /app/frontend/dist /usr/share/nginx/html
 
 # Copy custom nginx config
-COPY nginx.conf /etc/nginx/conf.d/default.conf
+COPY frontend/nginx.conf /etc/nginx/conf.d/default.conf
 
 # Expose port
 EXPOSE 80
