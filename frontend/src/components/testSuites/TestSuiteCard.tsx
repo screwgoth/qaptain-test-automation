@@ -4,8 +4,8 @@
  */
 
 import { useState } from 'react';
-import { useMutation, useQueryClient } from '@tantml:parameter>
-<parameter name="content">import api from '../../services/api';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import api from '../../services/api';
 import { TestSuite } from '../../types/app';
 import FileUploadModal from './FileUploadModal';
 import RunTestModal from './RunTestModal';
