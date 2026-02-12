@@ -24,8 +24,9 @@ const TestRunDetail = () => {
       return response.data;
     },
     enabled: !!runId,
-    refetchInterval: (data) => {
+    refetchInterval: (query) => {
       // Stop refetching if run is complete
+      const data = query.state.data;
       return data && ['completed', 'failed', 'cancelled'].includes(data.status) ? false : 3000;
     },
   });
@@ -44,7 +45,7 @@ const TestRunDetail = () => {
   useEffect(() => {
     if (!runId) return;
 
-    const socket = socketService.connect();
+    socketService.connect();
     socketService.joinTestRun(runId);
 
     const handleProgress = (data: any) => {

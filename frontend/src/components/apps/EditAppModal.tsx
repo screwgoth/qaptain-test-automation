@@ -5,7 +5,7 @@
 import { useState } from 'react';
 import { useMutation } from '@tanstack/react-query';
 import api from '../../services/api';
-import { App, UpdateAppData, AuthConfig } from '../../types/app';
+import { App, UpdateAppData } from '../../types/app';
 
 interface EditAppModalProps {
   app: App;
@@ -43,11 +43,11 @@ const EditAppModal = ({ app, onClose, onSuccess }: EditAppModalProps) => {
     setError('');
 
     const submitData: UpdateAppData = {
-      ...(formData.name !== app.name && { name: formData.name.trim() }),
-      ...(formData.description !== app.description && { description: formData.description?.trim() || null }),
-      ...(formData.url !== app.url && { url: formData.url?.trim() || null }),
-      ...(formData.stagingUrl !== app.stagingUrl && { stagingUrl: formData.stagingUrl?.trim() || null }),
-      ...(formData.productionUrl !== app.productionUrl && { productionUrl: formData.productionUrl?.trim() || null }),
+      ...(formData.name !== app.name && formData.name && { name: formData.name.trim() }),
+      ...(formData.description !== app.description && { description: formData.description?.trim() || undefined }),
+      ...(formData.url !== app.url && { url: formData.url?.trim() || undefined }),
+      ...(formData.stagingUrl !== app.stagingUrl && { stagingUrl: formData.stagingUrl?.trim() || undefined }),
+      ...(formData.productionUrl !== app.productionUrl && { productionUrl: formData.productionUrl?.trim() || undefined }),
       authType: formData.authType,
       authCredentials: formData.authCredentials,
     };
