@@ -22,10 +22,10 @@ router.put('/:id', testSuitesController.updateTestSuite);
 router.delete('/:id', testSuitesController.deleteTestSuite);
 
 // Test Files
-router.post('/:id/files', upload.single('file'), testSuitesController.uploadTestFile);
+router.post('/:id/files', testSuitesController.uploadTestFileJSON); // JSON upload
+router.post('/:id/files/upload', upload.single('file'), testSuitesController.uploadTestFile); // File upload
 router.post('/:id/files/bulk', upload.array('files'), testSuitesController.uploadTestFiles);
 router.get('/:id/files', testSuitesController.getTestFiles);
-router.put('/:id/files/:fileId', testSuitesController.updateTestFile);
-router.delete('/:id/files/:fileId', testSuitesController.deleteTestFile);
+// Removed - now handled by testFiles routes
 
 export default router;

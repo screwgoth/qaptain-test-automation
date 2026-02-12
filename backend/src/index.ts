@@ -24,6 +24,8 @@ import testSuitesRoutes from './routes/testSuites.routes';
 import testRunsRoutes from './routes/testRuns.routes';
 import reportsRoutes from './routes/reports.routes';
 import webhooksRoutes from './routes/webhooks.routes';
+import environmentsRoutes from './routes/environments.routes';
+import testFilesRoutes from './routes/testFiles.routes';
 
 // Load environment variables
 dotenv.config();
@@ -76,6 +78,8 @@ app.use('/api/test-suites', testSuitesRoutes);
 app.use('/api/test-runs', testRunsRoutes);
 app.use('/api/reports', reportsRoutes);
 app.use('/api/webhooks', webhooksRoutes);
+app.use('/api/environments', environmentsRoutes);
+app.use('/api/test-files', testFilesRoutes);
 
 // 404 handler
 app.use((req, res) => {

@@ -180,3 +180,42 @@ export const getEnvironments = async (req: AuthRequest, res: Response): Promise<
 
   res.json({ environments });
 };
+
+/**
+ * Update environment
+ */
+export const updateEnvironment = async (req: AuthRequest, res: Response): Promise<void> => {
+  const { id } = req.params;
+  const { name, type, baseUrl, variables, isDefault } = req.body;
+
+  const environment = await prisma.environment.update({
+    where: { id },
+    data: {
+      ...(name && { name }),
+      ...(type && { type }),
+      ...(baseUrl && { baseUrl }),
+      ...(variables !== undefined && { variables }),
+      ...(isDefault !== undefined && { isDefault }),
+    },
+  });
+
+  res.json({
+    message: 'Environment updated successfully',
+    environment,
+  });
+};
+
+/**
+ * Delete environment
+ */
+export const deleteEnvironment = async (req: AuthRequest, res: Response): Promise<void> => {
+  const { id } = req.params;
+
+  await prisma.environment.delete({
+    where: { id },
+  });
+
+  res.json({
+    message: 'Environment deleted successfully',
+  });
+};

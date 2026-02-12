@@ -128,7 +128,34 @@ export const deleteTestSuite = async (req: AuthRequest, res: Response): Promise<
 };
 
 /**
- * Upload a single test file
+ * Upload a single test file via JSON
+ */
+export const uploadTestFileJSON = async (req: AuthRequest, res: Response): Promise<void> => {
+  const { id } = req.params;
+  const { filename, content } = req.body;
+
+  if (!filename || !content) {
+    throw badRequest('filename and content are required');
+  }
+
+  // Create test file record
+  const testFile = await prisma.testFile.create({
+    data: {
+      name: filename,
+      path: filename,
+      code: content,
+      suiteId: id,
+    },
+  });
+
+  res.status(201).json({
+    message: 'Test file uploaded successfully',
+    testFile,
+  });
+};
+
+/**
+ * Upload a single test file via multipart
  */
 export const uploadTestFile = async (req: AuthRequest, res: Response): Promise<void> => {
   const { id } = req.params;
@@ -218,11 +245,11 @@ export const getTestFiles = async (req: AuthRequest, res: Response): Promise<voi
  * Update test file
  */
 export const updateTestFile = async (req: AuthRequest, res: Response): Promise<void> => {
-  const { fileId } = req.params;
+  const { id } = req.params;
   const { name, code, description, tags, priority, isEnabled } = req.body;
 
   const testFile = await prisma.testFile.update({
-    where: { id: fileId },
+    where: { id },
     data: {
       ...(name && { name }),
       ...(code && { code }),
@@ -243,10 +270,10 @@ export const updateTestFile = async (req: AuthRequest, res: Response): Promise<v
  * Delete test file
  */
 export const deleteTestFile = async (req: AuthRequest, res: Response): Promise<void> => {
-  const { fileId } = req.params;
+  const { id } = req.params;
 
   await prisma.testFile.delete({
-    where: { id: fileId },
+    where: { id },
   });
 
   res.json({
