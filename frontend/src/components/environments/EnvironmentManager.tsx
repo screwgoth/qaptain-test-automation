@@ -18,9 +18,9 @@ const EnvironmentManager = ({ appId, environments }: EnvironmentManagerProps) =>
   const [editingId, setEditingId] = useState<string | null>(null);
   const [formData, setFormData] = useState<CreateEnvironmentData>({
     name: '',
-    type: 'dev',
     baseUrl: '',
     variables: {},
+    isDefault: false,
   });
   const [variableKey, setVariableKey] = useState('');
   const [variableValue, setVariableValue] = useState('');
@@ -62,9 +62,9 @@ const EnvironmentManager = ({ appId, environments }: EnvironmentManagerProps) =>
   const resetForm = () => {
     setFormData({
       name: '',
-      type: 'dev',
       baseUrl: '',
       variables: {},
+      isDefault: false,
     });
     setIsCreating(false);
     setEditingId(null);
@@ -74,9 +74,9 @@ const EnvironmentManager = ({ appId, environments }: EnvironmentManagerProps) =>
     setEditingId(env.id);
     setFormData({
       name: env.name,
-      type: env.type,
       baseUrl: env.baseUrl,
       variables: env.variables || {},
+      isDefault: env.isDefault,
     });
     setIsCreating(true);
   };
@@ -154,19 +154,15 @@ const EnvironmentManager = ({ appId, environments }: EnvironmentManagerProps) =>
               </div>
 
               <div>
-                <label className="block text-sm font-medium mb-2 text-gray-700">
-                  Type <span className="text-red-500">*</span>
+                <label className="flex items-center">
+                  <input
+                    type="checkbox"
+                    checked={formData.isDefault}
+                    onChange={(e) => setFormData({ ...formData, isDefault: e.target.checked })}
+                    className="mr-2"
+                  />
+                  <span className="text-sm font-medium text-gray-700">Set as Default</span>
                 </label>
-                <select
-                  value={formData.type}
-                  onChange={(e) => setFormData({ ...formData, type: e.target.value as any })}
-                  className="input"
-                  required
-                >
-                  <option value="dev">Development</option>
-                  <option value="staging">Staging</option>
-                  <option value="prod">Production</option>
-                </select>
               </div>
             </div>
 
@@ -279,17 +275,11 @@ const EnvironmentManager = ({ appId, environments }: EnvironmentManagerProps) =>
               <div className="flex justify-between items-start mb-3">
                 <div>
                   <h3 className="text-lg font-semibold text-gray-900">{env.name}</h3>
-                  <span
-                    className={`inline-block mt-1 px-2 py-1 text-xs rounded ${
-                      env.type === 'prod'
-                        ? 'bg-red-100 text-red-800'
-                        : env.type === 'staging'
-                        ? 'bg-yellow-100 text-yellow-800'
-                        : 'bg-green-100 text-green-800'
-                    }`}
-                  >
-                    {env.type}
-                  </span>
+                  {env.isDefault && (
+                    <span className="inline-block mt-1 px-2 py-1 text-xs rounded bg-blue-100 text-blue-800">
+                      Default
+                    </span>
+                  )}
                 </div>
               </div>
 

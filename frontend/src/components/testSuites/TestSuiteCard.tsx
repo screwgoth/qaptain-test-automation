@@ -74,8 +74,8 @@ const TestSuiteCard = ({ suite, appId }: TestSuiteCardProps) => {
     }
   };
 
-  const handleDeleteFile = async (fileId: string, filename: string) => {
-    if (window.confirm(`Delete "${filename}"?`)) {
+  const handleDeleteFile = async (fileId: string, name: string) => {
+    if (window.confirm(`Delete "${name}"?`)) {
       try {
         await deleteFileMutation.mutateAsync(fileId);
       } catch (error) {
@@ -115,11 +115,11 @@ const TestSuiteCard = ({ suite, appId }: TestSuiteCardProps) => {
           </div>
           <div className="flex items-center text-gray-600">
             <span className="font-medium mr-2">Browser:</span>
-            <span>{suite.settings?.browser || 'chromium'}</span>
+            <span>{suite.config?.browser || 'chromium'}</span>
           </div>
           <div className="flex items-center text-gray-600">
             <span className="font-medium mr-2">Retries:</span>
-            <span>{suite.settings?.retries || 0}</span>
+            <span>{suite.config?.retries || 0}</span>
           </div>
         </div>
 
@@ -145,10 +145,10 @@ const TestSuiteCard = ({ suite, appId }: TestSuiteCardProps) => {
                       }
                       className="mr-1"
                     />
-                    <span className="font-mono text-gray-700">{file.filename}</span>
+                    <span className="font-mono text-gray-700">{file.name}</span>
                   </div>
                   <button
-                    onClick={() => handleDeleteFile(file.id, file.filename)}
+                    onClick={() => handleDeleteFile(file.id, file.name)}
                     className="text-red-600 hover:text-red-800 ml-2"
                   >
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

@@ -15,9 +15,11 @@ interface CreateTestSuiteModalProps {
 
 const CreateTestSuiteModal = ({ appId, onClose, onSuccess }: CreateTestSuiteModalProps) => {
   const [formData, setFormData] = useState<CreateTestSuiteData>({
+    appId,
     name: '',
     description: '',
-    settings: {
+    type: 'CUSTOM',
+    config: {
       browser: 'chromium',
       retries: 2,
       timeout: 30000,
@@ -52,11 +54,11 @@ const CreateTestSuiteModal = ({ appId, onClose, onSuccess }: CreateTestSuiteModa
     createMutation.mutate(formData);
   };
 
-  const updateSettings = (key: keyof TestSuiteSettings, value: any) => {
+  const updateConfig = (key: keyof TestSuiteSettings, value: any) => {
     setFormData({
       ...formData,
-      settings: {
-        ...formData.settings,
+      config: {
+        ...formData.config,
         [key]: value,
       },
     });
@@ -124,8 +126,8 @@ const CreateTestSuiteModal = ({ appId, onClose, onSuccess }: CreateTestSuiteModa
                     Browser
                   </label>
                   <select
-                    value={formData.settings?.browser}
-                    onChange={(e) => updateSettings('browser', e.target.value)}
+                    value={formData.config?.browser}
+                    onChange={(e) => updateConfig('browser', e.target.value)}
                     className="input"
                     disabled={createMutation.isPending}
                   >
@@ -141,8 +143,8 @@ const CreateTestSuiteModal = ({ appId, onClose, onSuccess }: CreateTestSuiteModa
                   </label>
                   <input
                     type="number"
-                    value={formData.settings?.retries}
-                    onChange={(e) => updateSettings('retries', parseInt(e.target.value))}
+                    value={formData.config?.retries}
+                    onChange={(e) => updateConfig('retries', parseInt(e.target.value))}
                     className="input"
                     min="0"
                     max="5"
@@ -156,8 +158,8 @@ const CreateTestSuiteModal = ({ appId, onClose, onSuccess }: CreateTestSuiteModa
                   </label>
                   <input
                     type="number"
-                    value={formData.settings?.timeout}
-                    onChange={(e) => updateSettings('timeout', parseInt(e.target.value))}
+                    value={formData.config?.timeout}
+                    onChange={(e) => updateConfig('timeout', parseInt(e.target.value))}
                     className="input"
                     step="1000"
                     disabled={createMutation.isPending}
@@ -168,8 +170,8 @@ const CreateTestSuiteModal = ({ appId, onClose, onSuccess }: CreateTestSuiteModa
                   <label className="flex items-center">
                     <input
                       type="checkbox"
-                      checked={formData.settings?.headless}
-                      onChange={(e) => updateSettings('headless', e.target.checked)}
+                      checked={formData.config?.headless}
+                      onChange={(e) => updateConfig('headless', e.target.checked)}
                       className="mr-2"
                       disabled={createMutation.isPending}
                     />
@@ -179,8 +181,8 @@ const CreateTestSuiteModal = ({ appId, onClose, onSuccess }: CreateTestSuiteModa
                   <label className="flex items-center">
                     <input
                       type="checkbox"
-                      checked={formData.settings?.parallel}
-                      onChange={(e) => updateSettings('parallel', e.target.checked)}
+                      checked={formData.config?.parallel}
+                      onChange={(e) => updateConfig('parallel', e.target.checked)}
                       className="mr-2"
                       disabled={createMutation.isPending}
                     />

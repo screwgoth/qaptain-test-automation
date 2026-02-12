@@ -18,11 +18,11 @@ interface RunTestModalProps {
 const RunTestModal = ({ suite, onClose }: RunTestModalProps) => {
   const navigate = useNavigate();
   const [config, setConfig] = useState<TestRunConfig>({
-    browser: suite.settings?.browser || 'chromium',
+    browser: suite.config?.browser || 'chromium',
     environment: undefined,
-    retries: suite.settings?.retries || 2,
-    headless: suite.settings?.headless !== false,
-    parallel: suite.settings?.parallel || false,
+    retries: suite.config?.retries || 2,
+    headless: suite.config?.headless !== false,
+    parallel: suite.config?.parallel || false,
   });
   const [error, setError] = useState('');
 

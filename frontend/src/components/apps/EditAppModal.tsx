@@ -17,11 +17,12 @@ const EditAppModal = ({ app, onClose, onSuccess }: EditAppModalProps) => {
   const [formData, setFormData] = useState<UpdateAppData>({
     name: app.name,
     description: app.description || '',
-    repoUrl: app.repoUrl || '',
+    url: app.url || '',
+    stagingUrl: app.stagingUrl || '',
+    productionUrl: app.productionUrl || '',
+    authType: app.authType || 'NONE',
+    authCredentials: app.authCredentials || {},
   });
-  const [authConfig, setAuthConfig] = useState<AuthConfig>(
-    app.authConfig || { type: 'none' }
-  );
   const [error, setError] = useState('');
 
   const updateMutation = useMutation({
@@ -44,8 +45,11 @@ const EditAppModal = ({ app, onClose, onSuccess }: EditAppModalProps) => {
     const submitData: UpdateAppData = {
       ...(formData.name !== app.name && { name: formData.name.trim() }),
       ...(formData.description !== app.description && { description: formData.description?.trim() || null }),
-      ...(formData.repoUrl !== app.repoUrl && { repoUrl: formData.repoUrl?.trim() || null }),
-      authConfig,
+      ...(formData.url !== app.url && { url: formData.url?.trim() || null }),
+      ...(formData.stagingUrl !== app.stagingUrl && { stagingUrl: formData.stagingUrl?.trim() || null }),
+      ...(formData.productionUrl !== app.productionUrl && { productionUrl: formData.productionUrl?.trim() || null }),
+      authType: formData.authType,
+      authCredentials: formData.authCredentials,
     };
 
     updateMutation.mutate(submitData);
@@ -104,13 +108,42 @@ const EditAppModal = ({ app, onClose, onSuccess }: EditAppModalProps) => {
 
             <div>
               <label className="block text-sm font-medium mb-2 text-gray-700">
-                Repository URL
+                Development/Default URL <span className="text-red-500">*</span>
               </label>
               <input
                 type="url"
-                value={formData.repoUrl}
-                onChange={(e) => setFormData({ ...formData, repoUrl: e.target.value })}
+                value={formData.url}
+                onChange={(e) => setFormData({ ...formData, url: e.target.value })}
                 className="input"
+                disabled={updateMutation.isPending}
+                required
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium mb-2 text-gray-700">
+                Staging URL
+              </label>
+              <input
+                type="url"
+                value={formData.stagingUrl || ''}
+                onChange={(e) => setFormData({ ...formData, stagingUrl: e.target.value })}
+                className="input"
+                placeholder="https://staging.example.com"
+                disabled={updateMutation.isPending}
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium mb-2 text-gray-700">
+                Production URL
+              </label>
+              <input
+                type="url"
+                value={formData.productionUrl || ''}
+                onChange={(e) => setFormData({ ...formData, productionUrl: e.target.value })}
+                className="input"
+                placeholder="https://example.com"
                 disabled={updateMutation.isPending}
               />
             </div>
@@ -123,30 +156,30 @@ const EditAppModal = ({ app, onClose, onSuccess }: EditAppModalProps) => {
                   Auth Type
                 </label>
                 <select
-                  value={authConfig.type}
-                  onChange={(e) =>
-                    setAuthConfig({ type: e.target.value as AuthConfig['type'], credentials: {} })
-                  }
+                  value={formData.authType}
+                  onChange={(e) => setFormData({ ...formData, authType: e.target.value as any, authCredentials: {} })}
                   className="input"
                   disabled={updateMutation.isPending}
                 >
-                  <option value="none">None</option>
-                  <option value="basic">Basic Auth</option>
-                  <option value="bearer">Bearer Token</option>
-                  <option value="oauth2">OAuth2</option>
+                  <option value="NONE">None</option>
+                  <option value="BASIC">Basic Auth</option>
+                  <option value="JWT">JWT Token</option>
+                  <option value="OAUTH">OAuth</option>
+                  <option value="COOKIES">Cookies</option>
+                  <option value="CUSTOM">Custom</option>
                 </select>
               </div>
 
-              {authConfig.type === 'basic' && (
+              {formData.authType === 'BASIC' && (
                 <div className="space-y-3">
                   <input
                     type="text"
                     placeholder="Username"
-                    value={authConfig.credentials?.username || ''}
+                    value={formData.authCredentials?.username || ''}
                     onChange={(e) =>
-                      setAuthConfig({
-                        ...authConfig,
-                        credentials: { ...authConfig.credentials, username: e.target.value },
+                      setFormData({
+                        ...formData,
+                        authCredentials: { ...formData.authCredentials, username: e.target.value },
                       })
                     }
                     className="input"
@@ -155,11 +188,11 @@ const EditAppModal = ({ app, onClose, onSuccess }: EditAppModalProps) => {
                   <input
                     type="password"
                     placeholder="Password"
-                    value={authConfig.credentials?.password || ''}
+                    value={formData.authCredentials?.password || ''}
                     onChange={(e) =>
-                      setAuthConfig({
-                        ...authConfig,
-                        credentials: { ...authConfig.credentials, password: e.target.value },
+                      setFormData({
+                        ...formData,
+                        authCredentials: { ...formData.authCredentials, password: e.target.value },
                       })
                     }
                     className="input"
@@ -168,15 +201,15 @@ const EditAppModal = ({ app, onClose, onSuccess }: EditAppModalProps) => {
                 </div>
               )}
 
-              {authConfig.type === 'bearer' && (
+              {formData.authType === 'JWT' && (
                 <input
                   type="text"
-                  placeholder="Bearer Token"
-                  value={authConfig.credentials?.token || ''}
+                  placeholder="JWT Token"
+                  value={formData.authCredentials?.token || ''}
                   onChange={(e) =>
-                    setAuthConfig({
-                      ...authConfig,
-                      credentials: { token: e.target.value },
+                    setFormData({
+                      ...formData,
+                      authCredentials: { token: e.target.value },
                     })
                   }
                   className="input"
@@ -184,16 +217,16 @@ const EditAppModal = ({ app, onClose, onSuccess }: EditAppModalProps) => {
                 />
               )}
 
-              {authConfig.type === 'oauth2' && (
+              {formData.authType === 'OAUTH' && (
                 <div className="space-y-3">
                   <input
                     type="text"
                     placeholder="Client ID"
-                    value={authConfig.credentials?.clientId || ''}
+                    value={formData.authCredentials?.clientId || ''}
                     onChange={(e) =>
-                      setAuthConfig({
-                        ...authConfig,
-                        credentials: { ...authConfig.credentials, clientId: e.target.value },
+                      setFormData({
+                        ...formData,
+                        authCredentials: { ...formData.authCredentials, clientId: e.target.value },
                       })
                     }
                     className="input"
@@ -202,11 +235,11 @@ const EditAppModal = ({ app, onClose, onSuccess }: EditAppModalProps) => {
                   <input
                     type="password"
                     placeholder="Client Secret"
-                    value={authConfig.credentials?.clientSecret || ''}
+                    value={formData.authCredentials?.clientSecret || ''}
                     onChange={(e) =>
-                      setAuthConfig({
-                        ...authConfig,
-                        credentials: { ...authConfig.credentials, clientSecret: e.target.value },
+                      setFormData({
+                        ...formData,
+                        authCredentials: { ...formData.authCredentials, clientSecret: e.target.value },
                       })
                     }
                     className="input"

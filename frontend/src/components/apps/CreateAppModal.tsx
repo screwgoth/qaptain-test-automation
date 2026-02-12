@@ -16,7 +16,7 @@ const CreateAppModal = ({ onClose, onSuccess }: CreateAppModalProps) => {
   const [formData, setFormData] = useState<CreateAppData>({
     name: '',
     description: '',
-    repoUrl: '',
+    url: '',
   });
   const [error, setError] = useState('');
 
@@ -44,8 +44,8 @@ const CreateAppModal = ({ onClose, onSuccess }: CreateAppModalProps) => {
 
     const submitData: CreateAppData = {
       name: formData.name.trim(),
+      url: formData.url.trim() || 'https://example.com',
       ...(formData.description?.trim() && { description: formData.description.trim() }),
-      ...(formData.repoUrl?.trim() && { repoUrl: formData.repoUrl.trim() }),
     };
 
     createMutation.mutate(submitData);
@@ -106,16 +106,20 @@ const CreateAppModal = ({ onClose, onSuccess }: CreateAppModalProps) => {
 
             <div>
               <label className="block text-sm font-medium mb-2 text-gray-700">
-                Repository URL
+                App URL <span className="text-red-500">*</span>
               </label>
               <input
                 type="url"
-                value={formData.repoUrl}
-                onChange={(e) => setFormData({ ...formData, repoUrl: e.target.value })}
+                value={formData.url}
+                onChange={(e) => setFormData({ ...formData, url: e.target.value })}
                 className="input"
-                placeholder="https://github.com/user/repo"
+                placeholder="https://app.example.com"
+                required
                 disabled={createMutation.isPending}
               />
+              <p className="mt-1 text-xs text-gray-500">
+                The default/development URL for your application
+              </p>
             </div>
 
             <div className="flex gap-3 pt-4">

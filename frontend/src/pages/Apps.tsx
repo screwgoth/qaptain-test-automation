@@ -142,19 +142,17 @@ const Apps = () => {
                     <span className="font-medium mr-2">Environments:</span>
                     <span>{app.environments?.length || 0}</span>
                   </div>
-                  {app.repoUrl && (
-                    <div className="flex items-center text-gray-600">
-                      <span className="font-medium mr-2">Repo:</span>
-                      <a
-                        href={app.repoUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-primary-600 hover:underline truncate"
-                      >
-                        {app.repoUrl}
-                      </a>
-                    </div>
-                  )}
+                  <div className="flex items-center text-gray-600">
+                    <span className="font-medium mr-2">URL:</span>
+                    <a
+                      href={app.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-primary-600 hover:underline truncate"
+                    >
+                      {app.url}
+                    </a>
+                  </div>
                 </div>
 
                 <div className="mt-4 pt-4 border-t border-gray-200 flex gap-2">
