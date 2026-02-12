@@ -15,9 +15,10 @@ Qaptain (Quality Captain) is a centralized test automation platform that manages
 **Phase 1 (Foundation):** Solid platform for managing and executing tests  
 **Phase 2+ (AI Features):** Test generation, self-healing, natural language interface
 
-## ✨ Phase 1 Features (No AI - Foundation)
+## ✨ Phase 1 Features (Foundation + Test Recorder)
 
 - 🌐 **Multi-App Platform** - Manage unlimited web applications from one dashboard
+- 🎬 **Test Recorder** - Record tests by clicking through your app (no code required!)
 - 📤 **Test Upload & Organization** - Upload Playwright tests, organize into suites
 - ⚡ **Parallel Execution** - Run tests concurrently across browsers and workers
 - 🔄 **Smart Retries** - Auto-retry failed tests with configurable strategies
@@ -51,14 +52,15 @@ Qaptain (Quality Captain) is a centralized test automation platform that manages
 ## 🚧 Project Status
 
 **Phase**: Planning & Design  
-**PRD Version**: 2.0 (Pragmatic, Phase 1 without AI)  
+**PRD Version**: 2.1 (Pragmatic, Phase 1 with Test Recorder)  
 **Next**: Begin Phase 1 Development
 
 ## 🎯 Roadmap
 
-- [x] PRD v2.0 Complete (Realistic, foundation-first approach)
-- [ ] **Phase 1: Foundation (Weeks 1-6)** - NO AI
+- [x] PRD v2.1 Complete (Foundation + Test Recorder)
+- [ ] **Phase 1: Foundation (Weeks 1-6)** - Test Recorder, No AI
   - [ ] Multi-app management
+  - [ ] **Test recorder (Playwright Inspector integration)**
   - [ ] Test file upload & organization
   - [ ] Playwright execution engine (parallel, retries)
   - [ ] Reporting and analytics
