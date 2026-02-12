@@ -1,30 +1,38 @@
 # Qaptain Test Automation Platform - Product Requirements Document
 
-**Version:** 1.0  
-**Date:** 2026-02-10  
+**Version:** 2.0  
+**Date:** 2026-02-12  
 **Author:** ScrewMolt  
-**Status:** Draft  
-**Purpose:** AI-powered test automation platform for modern web applications
+**Status:** Draft - Revised with pragmatic Phase 1  
+**Purpose:** Progressive test automation platform - foundation first, AI later
 
 ---
 
 ## 1. Executive Summary
 
-**Qaptain** (Quality Captain) is an AI-powered test automation platform that combines Playwright's browser automation with Claude AI to create an intelligent, self-healing test suite capable of testing multiple web applications. It replaces traditional SDET workflows with an AI agent that can generate tests, execute them intelligently, adapt to changes, and provide actionable insights.
+**Qaptain** (Quality Captain) is a modern test automation platform that centralizes Playwright-based browser testing for multiple web applications. It provides a clean UI for managing tests, executing them in parallel across browsers, and analyzing results - with a roadmap to add AI-powered features (test generation, self-healing) in future phases.
 
-**Key Value Propositions:**
-- **AI Test Generation**: Point at a URL, get a complete test suite
-- **Self-Healing Tests**: AI automatically fixes broken selectors and adapts to UI changes
-- **Multi-App Testing**: Manage and test multiple web applications from one platform
-- **Intelligent Execution**: AI prioritizes tests and optimizes runs
-- **Natural Language Interface**: "Test login on staging" → AI executes
-- **Zero SDET Overhead**: AI does what 10 SDETs would do manually
+**Phase 1 Value Propositions:**
+- **Multi-App Platform**: Manage and test unlimited web applications from one dashboard
+- **Playwright Integration**: Leverage modern, reliable browser automation (Chromium, Firefox, WebKit)
+- **Parallel Execution**: Run tests concurrently across multiple browsers and workers
+- **Centralized Reporting**: All test results, screenshots, and videos in one place
+- **CI/CD Ready**: Webhook triggers, API integration, quality gates
+- **Developer-Friendly**: TypeScript support, modern UI, fast setup
+
+**Future Vision (Phase 2+):**
+- AI test generation (point at URL → generate tests)
+- Self-healing tests (auto-fix broken selectors)
+- Natural language interface ("Test login on staging")
+- Visual regression with AI analysis
+- Predictive failure detection
 
 **Target Market:**
-- Development teams without dedicated QA
+- Development teams needing centralized test management
 - Companies with multiple web applications
-- DevOps teams wanting quality gates
-- Startups needing fast, reliable testing
+- DevOps teams wanting quality gates in CI/CD
+- Teams transitioning from Selenium to Playwright
+- Startups needing fast, reliable testing without SDET overhead
 
 ---
 
@@ -41,57 +49,81 @@
 - ❌ Complex test frameworks require training
 - ❌ Managing tests across multiple apps is fragmented
 
-**What Teams Need:**
-- ✅ Automated test generation (not manual writing)
-- ✅ Tests that fix themselves when UI changes
+**What Teams Need (Phase 1 Focus):**
 - ✅ Centralized platform for all web apps
-- ✅ AI that understands context and prioritizes
-- ✅ Natural language test execution
-- ✅ Actionable insights, not just pass/fail
-- ✅ Fast setup (minutes, not weeks)
+- ✅ Modern, reliable test framework (Playwright > Selenium)
+- ✅ Parallel execution for faster feedback
+- ✅ Easy test management (upload, organize, version)
+- ✅ CI/CD integration out of the box
+- ✅ Clear reporting with screenshots and videos
+- ✅ Fast setup (5 minutes per app)
+
+**Future Needs (Phase 2+):**
+- 🔮 Automated test generation
+- 🔮 Self-healing tests
+- 🔮 AI-powered insights
 
 ---
 
 ## 3. Goals & Objectives
 
-### Primary Goals
+### Primary Goals (Phase 1)
 
-1. **Replace SDET Manual Work with AI**
-   - AI generates 80% of test scenarios automatically
-   - Self-healing reduces maintenance time by 90%
-   - Test creation time: hours → minutes
-
-2. **Multi-App Testing Platform**
-   - Manage unlimited web applications
+1. **Multi-App Testing Platform**
+   - Manage unlimited web applications from one dashboard
    - Centralized test execution and reporting
-   - Cross-app insights and trends
+   - Organize tests by app, suite, and environment
 
-3. **Intelligent Test Execution**
-   - AI prioritizes critical tests
-   - Smart retries and failure analysis
-   - Predictive failure detection
+2. **Reliable Test Execution**
+   - Parallel execution across browsers and workers
+   - Built-in retries and error handling
+   - Support for headless and headed modes
+   - Screenshot and video capture on failures
 
-4. **Developer-Friendly**
-   - Natural language commands
+3. **Developer-Friendly**
    - 5-minute setup per app
-   - Minimal configuration
+   - Upload existing Playwright tests or write new ones
+   - TypeScript/JavaScript support
+   - Git integration for test versioning
+
+4. **CI/CD Integration**
+   - Webhook triggers (GitHub, GitLab, Jenkins)
+   - REST API for programmatic access
+   - Quality gates (block deploys on test failures)
+   - Slack/email notifications
 
 5. **Production-Grade Quality**
-   - 99.9% test reliability
-   - Fast execution (< 30 min for full suite)
-   - CI/CD integration ready
+   - 99.9% platform uptime
+   - Fast execution (parallel workers)
+   - Secure credential storage
+   - Comprehensive audit logs
+
+### Future Goals (Phase 2+)
+
+6. **AI Test Generation** - Point at URL, get test suite
+7. **Self-Healing Tests** - Auto-fix broken selectors
+8. **Natural Language Interface** - Chat-based test execution
+9. **Visual Regression** - AI-powered screenshot comparison
+10. **Predictive Analytics** - AI identifies flaky tests and trends
 
 ### Success Metrics
 
+| Metric | Phase 1 Target |
+|--------|----------------|
+| Setup time (new app) | < 5 minutes |
+| Test upload time | < 1 minute for 50 tests |
+| Test execution speed | < 30 min for 100 tests (parallel) |
+| Platform uptime | 99.9% |
+| API response time (p95) | < 200ms |
+| False positive rate | < 5% |
+| User satisfaction (NPS) | > 40 |
+
+**Phase 2+ Metrics (Future):**
 | Metric | Target |
 |--------|--------|
-| Test generation time | < 10 minutes per app |
-| Self-healing success rate | > 85% |
-| Test maintenance time reduction | > 90% |
-| False positive rate | < 5% |
-| Test execution speed | < 30 min for 100 tests |
-| Setup time (new app) | < 5 minutes |
-| User satisfaction (NPS) | > 50 |
+| AI test generation time | < 10 minutes per app |
+| Self-healing success rate | > 80% |
+| Test maintenance reduction | > 70% |
 
 ---
 
@@ -107,269 +139,252 @@
 
 ---
 
-## 5. Core Features
+## 5. Features & Roadmap
 
-### 5.1 MVP Features (Phase 1)
+### 5.1 Phase 1 Features (Foundation - Weeks 1-6)
 
 #### F1: Multi-App Management
 
-**Description:** Centralized dashboard to manage and test multiple web applications
+**Description:** Centralized dashboard to manage multiple web applications and their test suites
 
 **Features:**
-- Add/edit/delete web applications
-- App configuration:
-  - Name, URL (dev/staging/prod)
-  - Authentication method (basic auth, OAuth, cookies, JWT)
-  - Base selectors (optional hints)
-  - Test schedule (manual, on-demand, cron)
-- App grouping/tagging (e.g., "internal tools", "customer-facing")
-- Status overview (last run, pass rate, trends)
+- **App CRUD:**
+  - Add/edit/delete web applications
+  - Name, description, URLs (dev/staging/prod)
+  - App tags/categories (e.g., "internal tools", "customer-facing")
+  - App status (active/archived)
+
+- **Environment Configuration:**
+  - Multiple environments per app (dev, staging, production)
+  - Environment-specific base URLs
+  - Environment variables (API keys, etc.)
+
+- **Authentication Setup:**
+  - Authentication type selection:
+    - None (public app)
+    - Basic Auth (username/password)
+    - Cookie-based (upload cookies.json)
+    - Custom headers (API keys, tokens)
+  - Secure credential storage (encrypted at rest)
+  - Credential testing (verify before saving)
 
 **UI:**
-- Apps dashboard with cards showing:
-  - App name, URL, last test run, pass rate
-  - Quick actions: Run tests, Configure, View reports
-- App detail page:
-  - Test suites list
-  - Execution history
-  - Configuration settings
+- **Apps Dashboard:**
+  - Grid/list view of all apps
+  - Each card shows: name, last run status, pass rate, environment count
+  - Quick actions: Run tests, View reports, Configure
+  - Search and filter (by tag, status, pass rate)
+
+- **App Detail Page:**
+  - Overview tab (app info, quick stats)
+  - Environments tab (manage dev/staging/prod configs)
+  - Test suites tab (list of test suites)
+  - Reports tab (execution history)
+  - Settings tab (configuration)
 
 ---
 
-#### F2: AI Test Generation
+#### F2: Test Suite Management
 
-**Description:** AI agent analyzes a web app and automatically generates test scenarios
+**Description:** Organize and manage Playwright tests within each application
 
-**How It Works:**
-1. User provides URL + optional auth credentials
-2. AI agent:
-   - Crawls the application (sitemap or manual exploration)
-   - Analyzes HTML structure, forms, buttons, links
-   - Identifies common patterns (login, CRUD, navigation)
-   - Generates Page Object Models (POMs)
-   - Creates test scenarios based on user flows
-3. User reviews and approves generated tests
-4. Tests are saved to the test suite
+**Features:**
+- **Suite CRUD:**
+  - Create/edit/delete test suites
+  - Suite name, description, type (smoke/regression/custom)
+  - Assign tests to suites
 
-**AI Capabilities:**
-- **Smart Crawling**: Understands SPA routing, dynamic content
-- **Pattern Recognition**: Identifies login forms, tables, modals, etc.
-- **Flow Detection**: Maps user journeys (e.g., signup → login → dashboard)
-- **Assertion Generation**: Suggests validations based on page content
-- **Data Generation**: Creates realistic test data
+- **Test File Upload:**
+  - Drag-and-drop or browse to upload
+  - Supports `.spec.ts`, `.test.ts`, `.spec.js`, `.test.js`
+  - Bulk upload (zip file with multiple tests)
+  - Automatic test discovery (scans for Playwright test files)
 
-**Generated Artifacts:**
-- Page Object Models (TypeScript classes)
-- Test scenarios (Playwright tests)
-- Test data fixtures (JSON)
-- Configuration file
+- **Test Organization:**
+  - Folder structure (mirrors uploaded structure)
+  - Tagging system (smoke, regression, critical, etc.)
+  - Test dependencies (run test A before test B)
+  - Enable/disable individual tests
 
-**Example:**
-```
-User: "Analyze https://myapp.com and generate tests"
+- **Version Control:**
+  - Git integration (connect to GitHub/GitLab repo)
+  - Pull tests automatically from repo
+  - Track test changes over time
+  - Rollback to previous test versions
 
-AI Output:
-✅ Discovered 15 pages
-✅ Identified 3 forms (Login, Signup, Settings)
-✅ Generated 5 Page Objects
-✅ Created 20 test scenarios:
-   - Smoke tests (5)
-   - Login/Auth flows (4)
-   - CRUD operations (8)
-   - Navigation tests (3)
-```
+**Test Metadata:**
+- Test name, description, author
+- Tags (smoke, regression, p0, p1, etc.)
+- Estimated duration
+  - Browser compatibility flags
+  - Environment requirements
+
+**UI:**
+- **Test Suites Page:**
+  - List of suites with test counts
+  - Run entire suite button
+  - Edit suite settings
+
+- **Suite Detail Page:**
+  - File tree view of tests
+  - Individual test cards with metadata
+  - Run selected tests button
+  - Bulk actions (enable/disable, tag, delete)
 
 ---
 
 #### F3: Test Execution Engine
 
-**Description:** Robust test runner with parallel execution, retries, and smart scheduling
+**Description:** Reliable test runner with parallel execution and robust error handling
 
 **Features:**
 - **Execution Modes:**
-  - Manual (run now)
-  - Scheduled (cron-based)
-  - CI/CD triggered (webhook)
-  - On-demand via API or natural language
+  - Manual (run now via UI)
+  - Scheduled (cron-based, e.g., "Daily at 2 AM")
+  - CI/CD triggered (webhook from GitHub/GitLab)
+  - API-triggered (programmatic execution)
 
 - **Parallel Execution:**
-  - Run tests across multiple browsers simultaneously
-  - Configurable workers (default: 4 parallel)
-  - Resource management (CPU/memory limits)
+  - Run tests across multiple workers concurrently
+  - Configurable worker count (default: 4, max: 20)
+  - Resource management (CPU/memory limits per worker)
+  - Queue management (BullMQ for job distribution)
 
-- **Smart Retries:**
-  - Auto-retry failed tests (max 3 attempts)
-  - AI analyzes failure and adjusts strategy
-  - Different selectors, timing, or browser
-
-- **Test Types:**
-  - Smoke tests (critical paths, < 5 min)
-  - Regression (full suite, < 30 min)
-  - Custom suites (user-defined)
+- **Retry Logic:**
+  - Auto-retry failed tests (configurable: 0-3 retries)
+  - Exponential backoff between retries
+  - Retry on specific error types (timeout, network)
+  - Manual retry for individual tests from UI
 
 - **Browser Support:**
-  - Chromium, Firefox, WebKit
-  - Mobile emulation (Chrome/Safari mobile)
-  - Headless and headed modes
+  - Chromium (default)
+  - Firefox
+  - WebKit (Safari)
+  - Mobile emulation (Chrome Mobile, Safari Mobile)
+  - Headless mode (default for CI/CD)
+  - Headed mode (for debugging)
+
+- **Test Configuration:**
+  - Per-suite settings (timeout, retries, browsers)
+  - Environment selection (dev/staging/prod)
+  - Screenshot capture (on failure, always, never)
+  - Video recording (on failure, always, never)
+  - Trace files for debugging
 
 **Execution Flow:**
 ```
-1. User triggers test run
-2. Queue manager schedules tests
-3. Workers execute in parallel
-4. AI monitors execution in real-time
-5. Self-healing kicks in on failures
-6. Results aggregated and reported
-7. AI generates insights
+1. User triggers test run (manual/scheduled/webhook)
+2. Job added to BullMQ queue
+3. Worker picks up job
+4. Playwright executes tests in parallel
+5. Screenshots/videos captured on failures
+6. Results stored in database
+7. Notification sent (Slack/email)
+8. Report generated
+```
+
+**Run Configuration Options:**
+```typescript
+{
+  app_id: "uuid",
+  suite_ids: ["uuid1", "uuid2"], // or "all"
+  environment: "staging", // dev/staging/prod
+  browsers: ["chromium", "firefox"], // default: ["chromium"]
+  workers: 4, // parallel workers
+  retries: 2, // retry failed tests
+  headless: true,
+  screenshot: "on-failure", // on-failure/always/never
+  video: "on-failure",
+  timeout_ms: 30000 // per-test timeout
+}
 ```
 
 ---
 
-#### F4: Self-Healing Tests
+#### F4: Test Reporting & Analytics
 
-**Description:** AI automatically fixes broken selectors and adapts to UI changes
-
-**How It Works:**
-1. Test fails due to missing/changed element
-2. AI agent analyzes the failure:
-   - Captures current DOM snapshot
-   - Compares with expected structure
-   - Identifies likely new selector using:
-     - Visual similarity (position, size, color)
-     - Semantic meaning (aria labels, text content)
-     - DOM proximity (nearby elements)
-3. AI suggests new selector
-4. Reruns test with new selector
-5. If successful, updates Page Object Model
-6. Notifies user of auto-fix
-
-**Self-Healing Strategies:**
-- **Selector Fallback**: Try alternative selectors (ID → class → text → xpath)
-- **Fuzzy Matching**: "Sign In" button → "Sign in" or "SIGN IN"
-- **Visual Search**: AI identifies element by screenshot comparison
-- **DOM Learning**: AI learns element patterns across runs
-
-**Example:**
-```
-❌ Test failed: Button 'submit-btn' not found
-
-AI Self-Healing:
-1. Analyzing page structure...
-2. Found similar button with class 'btn-submit' at same position
-3. Testing alternative selector...
-✅ Test passed with new selector
-✅ Updated Page Object Model
-✅ Notification sent: "Auto-fixed broken selector in LoginPage"
-```
-
----
-
-#### F5: Natural Language Test Interface
-
-**Description:** Command and control tests using natural language (chat or API)
+**Description:** Comprehensive test results and historical analytics
 
 **Features:**
-- **Chat Interface**: Web-based chat to interact with the platform
-- **Commands:**
-  - "Run smoke tests on MyApp staging"
-  - "Test login flow with valid credentials"
-  - "Check if homepage loads in under 2 seconds"
-  - "Find all broken links on the site"
-  - "Compare production vs staging visually"
-  - "Generate tests for the new checkout page"
+- **Real-Time Run Dashboard:**
+  - Active test runs with progress bars
+  - Live log streaming (WebSocket updates)
+  - Pass/fail count (updating in real-time)
+  - Duration and ETA
 
-- **AI Understanding:**
-  - Parses intent (run tests, generate tests, analyze, etc.)
-  - Resolves app names (fuzzy matching)
-  - Understands context (staging vs prod)
-  - Executes appropriate action
+- **Test Run Results Page:**
+  - **Summary Section:**
+    - Total tests, Passed, Failed, Skipped
+    - Overall duration
+    - Environment and browser info
+    - Pass rate percentage
+  
+  - **Test Breakdown:**
+    - List of all tests with status (✅/❌/⏭️)
+    - Duration per test
+    - Browser used
+    - Retry count
 
-- **Response:**
-  - Real-time execution updates
-  - Test results summary
-  - Links to detailed reports
-  - Suggested next actions
-
-**Example Conversation:**
-```
-User: "Test the login page on MyApp"
-AI: "Running login tests on MyApp (staging)... 
-     ✅ 4/4 tests passed in 1m 23s. All good!"
-
-User: "What about production?"
-AI: "Running login tests on MyApp (production)...
-     ❌ 1/4 tests failed. Password reset link is broken.
-     Report: https://qaptain.app/reports/abc123"
-
-User: "Fix it and rerun"
-AI: "Applied self-healing... Retrying...
-     ✅ All tests passed! Updated selector for password reset link."
-```
-
----
-
-#### F6: Test Reporting & Analytics
-
-**Description:** Comprehensive dashboards and AI-generated insights
-
-**Features:**
-- **Real-Time Dashboard:**
-  - Active test runs (progress bars, live logs)
-  - Pass/fail status
-  - Duration and performance metrics
-
-- **Test Results Page:**
-  - Summary: Total, Passed, Failed, Skipped
-  - Test breakdown by suite/scenario
-  - Screenshots and videos for failures
-  - Error messages and stack traces
-  - AI-generated root cause analysis
+  - **Failure Details:**
+    - Error messages and stack traces
+    - Screenshots (before failure)
+    - Videos (full test recording)
+    - Console logs
+    - Network logs (optional)
+    - Playwright trace files (for debugging)
 
 - **Historical Analytics:**
-  - Trend charts (pass rate over time)
-  - Flaky test detection
-  - Performance trends (execution time)
-  - Browser-specific issues
+  - **Trend Charts:**
+    - Pass rate over time (line chart)
+    - Test duration trends
+    - Failure rate by browser
+  
+  - **Flaky Test Detection:**
+    - Tests that pass/fail intermittently
+    - Retry success rate
+    - Flagging for review
 
-- **AI Insights:**
-  - "Login tests fail 20% more on Firefox"
-  - "Homepage load time increased by 300ms since last deploy"
-  - "Checkout flow has 3 unstable tests - recommend refactor"
-  - "5 tests fixed automatically this week"
+  - **Performance Metrics:**
+    - Average test duration
+    - Suite execution time trends
+    - Slowest tests identification
 
-- **Export:**
-  - PDF reports
-  - CSV data
-  - JSON API
-  - Slack/email notifications
+- **Export & Notifications:**
+  - Download PDF report
+  - Export to CSV
+  - JSON API for programmatic access
+  - Slack notifications (pass/fail, with links)
+  - Email notifications (configurable)
 
 **Report Structure:**
 ```
 ┌─────────────────────────────────────────────┐
 │  Test Run Report - MyApp Staging            │
-│  Date: 2026-02-10 17:30                     │
+│  Run ID: abc-123 • Date: 2026-02-12 10:30  │
 ├─────────────────────────────────────────────┤
 │  Summary:                                   │
-│  ✅ Passed: 95 (95%)                        │
-│  ❌ Failed: 5 (5%)                          │
-│  ⏱️  Duration: 28m 14s                      │
+│  ✅ Passed: 47 (94%)                        │
+│  ❌ Failed: 3 (6%)                          │
+│  ⏱️  Duration: 12m 34s                      │
+│  🌐 Browser: Chromium                       │
 ├─────────────────────────────────────────────┤
 │  Failed Tests:                              │
-│  1. Login with invalid email               │
-│     Error: Element not found: #error-msg   │
-│     🤖 AI Insight: Selector changed,       │
-│        auto-fixed and passed on retry      │
+│  1. ❌ Login with invalid email             │
+│     Duration: 2.3s                          │
+│     Error: Timeout 30000ms exceeded         │
+│     Screenshot: [View] Video: [Watch]      │
 │                                             │
-│  2. Checkout - Payment submission          │
-│     Error: Timeout waiting for redirect    │
-│     🤖 AI Insight: API response slow,      │
-│        consider increasing timeout         │
+│  2. ❌ Checkout - Payment submission        │
+│     Duration: 8.1s                          │
+│     Error: Element not found: .btn-pay     │
+│     Retries: 2/2 (both failed)             │
+│     Screenshot: [View] Trace: [Download]   │
 └─────────────────────────────────────────────┘
 ```
 
 ---
 
-#### F7: CI/CD Integration
+#### F5: CI/CD Integration
 
 **Description:** Seamless integration with popular CI/CD platforms
 
@@ -417,94 +432,147 @@ jobs:
 
 ---
 
-### 5.2 Advanced Features (Phase 2)
+### 5.2 Phase 2 Features (AI-Powered Capabilities - Weeks 7-12)
 
-#### F8: Visual Regression Testing
+#### F6: AI Test Generation
 
-**Description:** AI-powered visual comparison to detect unintended UI changes
+**Description:** AI agent analyzes a web app and automatically generates test scenarios
+
+**How It Works:**
+1. User provides app URL + auth credentials
+2. AI crawls the application using browser tool
+3. Analyzes HTML structure, identifies interactive elements
+4. Generates Page Object Models (TypeScript classes)
+5. Creates test scenarios based on common patterns
+6. User reviews and approves generated tests
+
+**Generated Artifacts:**
+- Page Object Models
+- Test scenarios (Playwright tests)
+- Test data fixtures
+
+**Example:**
+```
+User: "Generate tests for https://myapp.com"
+AI: "✅ Discovered 15 pages, generated 5 POMs, created 20 tests"
+```
+
+---
+
+#### F7: Self-Healing Tests
+
+**Description:** AI automatically fixes broken selectors when tests fail
+
+**How It Works:**
+1. Test fails due to missing/changed element
+2. AI captures DOM snapshot and analyzes
+3. Identifies similar elements using:
+   - Text content matching
+   - Visual position similarity
+   - ARIA labels and semantic HTML
+4. Tests new selector and updates test if successful
+
+**Confidence Scoring:**
+- High confidence (>90%): Auto-fix and notify
+- Medium confidence (70-90%): Suggest fix, require approval
+- Low confidence (<70%): Report failure, manual fix required
+
+---
+
+#### F8: Natural Language Interface
+
+**Description:** Chat-based interface for test execution and management
+
+**Commands:**
+- "Run smoke tests on MyApp staging"
+- "Test login flow with invalid credentials"
+- "Show me all failed tests from last week"
+- "Generate tests for the new checkout page"
+
+**AI Understanding:**
+- Parses intent
+- Resolves app names
+- Executes appropriate actions
+- Provides natural language responses
+
+---
+
+### 5.3 Phase 3 Features (Advanced Capabilities - Weeks 13-18)
+
+#### F9: Visual Regression Testing
+
+**Description:** Screenshot comparison to detect unintended UI changes
 
 **Features:**
 - Baseline screenshot capture
 - Pixel-by-pixel comparison
-- AI-based similarity scoring (ignores insignificant changes)
-- Diff highlighting (red overlay on changes)
+- Diff highlighting
 - Approve/reject workflow
 
-**AI Enhancements:**
-- Ignores dynamic content (timestamps, ads)
-- Understands layout shifts vs content changes
-- Detects broken CSS/images
+**AI Enhancements (Future):**
+- Ignore dynamic content (timestamps, ads)
+- Detect layout shifts vs content changes
 
 ---
 
-#### F9: Multi-User Workflows
+#### F10: Performance Testing
 
-**Description:** Simulate multiple users interacting with the app simultaneously
+**Description:** Measure and monitor web performance metrics
+
+**Metrics:**
+- Page load time
+- Time to interactive
+- Largest contentful paint (LCP)
+- Cumulative layout shift (CLS)
+- Network waterfall analysis
+
+**Integration:**
+- Lighthouse integration
+- Performance budgets
+- Trend tracking over time
+
+---
+
+#### F11: Accessibility Testing
+
+**Description:** Automated WCAG compliance checks
+
+**Features:**
+- WCAG 2.1 Level AA compliance
+- Keyboard navigation testing
+- Screen reader compatibility
+- Color contrast validation
+- Axe-core integration
+
+---
+
+#### F12: Multi-User Workflows
+
+**Description:** Simulate concurrent users for collaboration and race condition testing
 
 **Use Cases:**
-- Concurrent login sessions
+- Concurrent logins
 - Real-time collaboration features
-- Race conditions and locking
 - Chat/messaging systems
-
-**Implementation:**
-- Parallel Playwright contexts
-- Shared state management
-- Synchronization primitives
+- Locking and race conditions
 
 ---
 
-#### F10: API + UI Hybrid Testing
+#### F13: API + UI Hybrid Testing
 
-**Description:** Combine API calls with UI interactions for faster test setup
+**Description:** Combine API calls with UI interactions for faster setup
 
 **Example:**
 ```
 1. Create user via API (fast)
 2. Login via UI (realistic)
 3. Verify dashboard via UI
-4. Update profile via API
-5. Verify changes via UI
 ```
 
 **Benefits:**
 - Faster test execution
 - Better data setup
 - Realistic end-to-end flows
-
----
-
-#### F11: Performance Testing
-
-**Description:** Measure and monitor performance metrics
-
-**Metrics:**
-- Page load time
-- Time to interactive
-- Largest contentful paint
-- Cumulative layout shift
-- Network waterfall
-
-**AI Insights:**
-- "Homepage load time degraded by 40% since last deploy"
-- "Checkout page uses 2MB of unoptimized images"
-
----
-
-#### F12: Accessibility Testing
-
-**Description:** Automated accessibility (a11y) checks
-
-**Features:**
-- WCAG 2.1 compliance checks
-- Keyboard navigation testing
-- Screen reader compatibility
-- Color contrast validation
-
-**AI Enhancements:**
-- Suggests ARIA labels
-- Identifies missing alt text
-- Recommends semantic HTML
 
 ---
 
@@ -732,11 +800,13 @@ CREATE TABLE ai_conversations (
 
 ---
 
-## 7. AI Agent Integration
+## 7. AI Agent Integration (Phase 2+)
 
-### 7.1 AI Agent Capabilities
+**Note:** AI features are planned for Phase 2 and beyond. Phase 1 focuses on the core platform without AI.
 
-The AI agent (Claude via OpenClaw) has three primary modes:
+### 7.1 AI Agent Capabilities (Future)
+
+The AI agent (Claude via OpenClaw) will have three primary modes:
 
 **1. Test Generation Mode:**
 - Receives: App URL + auth credentials
@@ -753,9 +823,9 @@ The AI agent (Claude via OpenClaw) has three primary modes:
 - Analyzes: Patterns, trends, anomalies
 - Outputs: Natural language insights + recommendations
 
-### 7.2 AI Workflows
+### 7.2 AI Workflows (Phase 2+)
 
-**Test Generation Workflow:**
+**Test Generation Workflow (Future):**
 ```
 1. User: "Generate tests for https://myapp.com"
 2. AI Agent:
@@ -773,7 +843,7 @@ The AI agent (Claude via OpenClaw) has three primary modes:
 3. User: Reviews and approves tests
 ```
 
-**Self-Healing Workflow:**
+**Self-Healing Workflow (Future):**
 ```
 1. Test fails: "Button #submit-btn not found"
 2. System captures DOM snapshot
@@ -860,86 +930,143 @@ The AI agent (Claude via OpenClaw) has three primary modes:
 
 ---
 
-## 9. Development Phases
+## 9. Development Roadmap
 
-### Phase 1: Foundation (Weeks 1-3)
+### Phase 1: Foundation (Weeks 1-6) - NO AI
 
-**Week 1: Project Setup**
-- ✓ Monorepo structure (frontend + backend + workers)
-- ✓ TypeScript configuration
-- ✓ Database schema + migrations
-- ✓ Docker setup
-- ✓ Basic API scaffolding
+**Milestone: Production-ready test automation platform**
 
-**Week 2: Core Features**
-- ✓ Apps CRUD (create, read, update, delete)
-- ✓ Basic test execution (manual trigger)
-- ✓ Playwright integration
-- ✓ Results storage
+**Week 1-2: Project Setup & Database**
+- [ ] Monorepo structure (frontend + backend)
+- [ ] TypeScript configuration (strict mode)
+- [ ] Database schema + migrations (Prisma)
+  - Apps, test_suites, test_files, test_runs, test_results tables
+- [ ] Docker setup (PostgreSQL + Redis)
+- [ ] Basic API scaffolding (Express routes)
+- [ ] Authentication (users, JWT)
 
-**Week 3: UI Foundation**
-- ✓ React app with routing
-- ✓ Dashboard page
-- ✓ Apps management page
-- ✓ Test run visualization
+**Week 3-4: Core Features**
+- [ ] Apps management CRUD (create/read/update/delete)
+- [ ] Test file upload (drag-and-drop, bulk upload)
+- [ ] Test suite organization (folders, tags)
+- [ ] Playwright integration (basic test execution)
+- [ ] BullMQ job queue setup
+- [ ] Worker process (execute Playwright tests)
+- [ ] Results storage (screenshots, videos, logs)
 
-### Phase 2: AI Integration (Weeks 4-6)
+**Week 5-6: UI & Reporting**
+- [ ] React app with routing and auth
+- [ ] Apps dashboard (list, cards, search)
+- [ ] Test suite management page
+- [ ] Test run page (real-time updates via WebSocket)
+- [ ] Results page (pass/fail, screenshots, videos)
+- [ ] Historical trends (pass rate over time)
+- [ ] Basic CI/CD integration (webhook endpoint)
+- [ ] Slack/email notifications
 
-**Week 4: Test Generation**
-- ✓ AI agent integration (OpenClaw + Claude)
-- ✓ Web crawling logic
-- ✓ Page Object Model generation
-- ✓ Test scenario creation
+**Phase 1 Deliverable:**
+- ✅ Multi-app platform with manual test management
+- ✅ Parallel test execution with Playwright
+- ✅ Comprehensive reporting and history
+- ✅ CI/CD ready (webhooks, API)
+- ✅ Production deployment (Docker)
 
-**Week 5: Self-Healing**
-- ✓ Failure detection
-- ✓ Selector healing algorithms
-- ✓ DOM analysis
-- ✓ Auto-fix pipeline
+---
 
-**Week 6: Natural Language Interface**
-- ✓ Chat UI
-- ✓ Command parsing
-- ✓ AI response generation
-- ✓ Action execution
+### Phase 2: AI Integration (Weeks 7-12) - AI FEATURES
 
-### Phase 3: Advanced Features (Weeks 7-9)
+**Milestone: AI-powered test generation and self-healing**
 
-**Week 7: Queue & Parallel Execution**
-- ✓ BullMQ integration
-- ✓ Worker processes
-- ✓ Parallel test execution
-- ✓ Resource management
+**Week 7-8: AI Test Generation**
+- [ ] OpenClaw + Claude AI integration
+- [ ] Web crawler (using browser tool)
+- [ ] Page analysis (identify elements, forms, buttons)
+- [ ] Page Object Model generation (TypeScript classes)
+- [ ] Test scenario generation (Playwright tests)
+- [ ] Review & approval workflow (UI)
 
-**Week 8: Reporting & Analytics**
-- ✓ Report generation
-- ✓ Historical trends
-- ✓ AI insights
-- ✓ PDF/CSV export
+**Week 9-10: Self-Healing Tests**
+- [ ] Failure detection and DOM snapshot capture
+- [ ] Selector healing algorithms:
+  - Text content matching
+  - Visual position similarity
+  - ARIA label matching
+- [ ] Confidence scoring system
+- [ ] Auto-fix pipeline (test new selector, update POM)
+- [ ] Approval workflow for low-confidence fixes
+- [ ] Self-healing logs and reporting
 
-**Week 9: CI/CD Integration**
-- ✓ Webhook endpoints
-- ✓ GitHub Actions integration
-- ✓ Quality gates
-- ✓ Notifications (Slack, email)
+**Week 11-12: Natural Language Interface**
+- [ ] Chat UI component
+- [ ] Natural language command parsing
+- [ ] Intent classification (run tests, generate tests, view reports)
+- [ ] App name resolution (fuzzy matching)
+- [ ] Action execution (trigger runs, generate tests)
+- [ ] Conversational responses
+- [ ] Chat history persistence
 
-### Phase 4: Polish & Launch (Weeks 10-12)
+**Phase 2 Deliverable:**
+- ✅ AI can generate tests from any URL
+- ✅ Self-healing fixes 70%+ of broken selectors
+- ✅ Natural language interface for test management
+- ✅ Reduced manual test writing by 60%+
 
-**Week 10: Testing & Bug Fixes**
-- ✓ Internal dogfooding
-- ✓ Bug fixes
-- ✓ Performance optimization
+---
 
-**Week 11: Documentation**
-- ✓ User guide
-- ✓ API documentation
-- ✓ Video tutorials
+### Phase 3: Advanced Features (Weeks 13-18) - OPTIONAL
 
-**Week 12: Launch Prep**
-- ✓ Marketing site
-- ✓ Pricing plans
-- ✓ Beta program
-- ✓ Public launch
+**Milestone: Enterprise-grade features and analytics**
+
+**Week 13-14: Visual Regression**
+- [ ] Screenshot baseline capture
+- [ ] Pixel-by-pixel comparison
+- [ ] Diff highlighting
+- [ ] Approve/reject workflow
+- [ ] AI-powered ignore rules (dynamic content)
+
+**Week 15-16: Performance & Accessibility**
+- [ ] Lighthouse integration
+- [ ] Performance metrics (LCP, CLS, TTI)
+- [ ] Performance budgets
+- [ ] Axe-core accessibility testing
+- [ ] WCAG compliance reports
+
+**Week 17-18: Advanced Analytics & Polish**
+- [ ] Flaky test detection (ML-based)
+- [ ] Predictive failure analysis
+- [ ] Multi-user workflow support
+- [ ] API + UI hybrid testing
+- [ ] Enterprise features (SSO, RBAC, audit logs)
+- [ ] Documentation and tutorials
+
+**Phase 3 Deliverable:**
+- ✅ Visual regression testing
+- ✅ Performance and accessibility monitoring
+- ✅ Advanced analytics and insights
+- ✅ Enterprise-ready platform
+
+---
+
+### Post-Launch (Ongoing)
+
+**Month 1-2: Beta Testing & Iteration**
+- Beta user feedback
+- Bug fixes and stability improvements
+- Performance optimization
+- Documentation refinement
+
+**Month 3-6: Growth & Expansion**
+- Mobile app testing (Appium integration)
+- API testing (REST/GraphQL)
+- Load testing (k6 integration)
+- Third-party integrations (Jira, PagerDuty, etc.)
+
+**Month 6+: Enterprise & Scale**
+- Self-hosted deployment option
+- Multi-tenancy and team collaboration
+- Advanced RBAC and permissions
+- SLA and dedicated support
+- Marketplace for community-contributed tests
 
 ---
 
