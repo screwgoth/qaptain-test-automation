@@ -1,25 +1,37 @@
 # Qaptain Test Automation Platform
 
-**AI-Powered Browser Automation for Modern Web Applications**
+**Modern Browser Automation for Multiple Web Applications**
 
 [![Status](https://img.shields.io/badge/status-planning-blue.svg)](https://github.com/screwgoth/qaptain-test-automation)
+[![Version](https://img.shields.io/badge/version-2.0--PRD-orange.svg)](docs/PRD.md)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
 ---
 
 ## 🎯 Vision
 
-Qaptain (Quality Captain) replaces traditional SDET workflows with an AI agent that automatically generates tests, executes them intelligently, adapts to changes, and provides actionable insights - all for multiple web applications from one platform.
+Qaptain (Quality Captain) is a centralized test automation platform that manages Playwright tests for multiple web applications, with a progressive roadmap to add AI-powered features over time.
 
-## ✨ Key Features
+**Phase 1 (Foundation):** Solid platform for managing and executing tests  
+**Phase 2+ (AI Features):** Test generation, self-healing, natural language interface
 
-- 🤖 **AI Test Generation** - Point at a URL, get a complete test suite
-- 🔧 **Self-Healing Tests** - AI automatically fixes broken selectors
-- 🌐 **Multi-App Platform** - Test unlimited web applications
-- 💬 **Natural Language Interface** - "Test login on staging" → done
-- 📊 **Smart Analytics** - AI-generated insights and trends
-- 🚀 **CI/CD Ready** - GitHub Actions, webhooks, quality gates
-- ⚡ **Fast Execution** - Parallel tests across multiple browsers
+## ✨ Phase 1 Features (No AI - Foundation)
+
+- 🌐 **Multi-App Platform** - Manage unlimited web applications from one dashboard
+- 📤 **Test Upload & Organization** - Upload Playwright tests, organize into suites
+- ⚡ **Parallel Execution** - Run tests concurrently across browsers and workers
+- 🔄 **Smart Retries** - Auto-retry failed tests with configurable strategies
+- 📊 **Comprehensive Reporting** - Screenshots, videos, logs, historical trends
+- 🔗 **CI/CD Integration** - Webhooks, API triggers, quality gates
+- 🔔 **Notifications** - Slack, email alerts on pass/fail
+
+## 🔮 Phase 2+ Features (Future - AI Powered)
+
+- 🤖 **AI Test Generation** - Point at URL, get test suite
+- 🔧 **Self-Healing Tests** - AI auto-fixes broken selectors
+- 💬 **Natural Language Interface** - "Test login on staging"
+- 📸 **Visual Regression** - AI-powered screenshot comparison
+- 🎯 **Predictive Analytics** - Flaky test detection, insights
 
 ## 🏗️ Tech Stack
 
@@ -39,25 +51,29 @@ Qaptain (Quality Captain) replaces traditional SDET workflows with an AI agent t
 ## 🚧 Project Status
 
 **Phase**: Planning & Design  
-**Version**: 0.1.0 (PRD Complete)  
+**PRD Version**: 2.0 (Pragmatic, Phase 1 without AI)  
 **Next**: Begin Phase 1 Development
 
 ## 🎯 Roadmap
 
-- [x] PRD Complete
-- [ ] Phase 1: Foundation (Weeks 1-3)
-  - [ ] Project setup
-  - [ ] Core features (Apps, Tests, Execution)
-  - [ ] Basic UI
-- [ ] Phase 2: AI Integration (Weeks 4-6)
-  - [ ] Test generation
-  - [ ] Self-healing
-  - [ ] Natural language interface
-- [ ] Phase 3: Advanced Features (Weeks 7-9)
-  - [ ] Queue & parallel execution
-  - [ ] Reporting & analytics
-  - [ ] CI/CD integration
-- [ ] Phase 4: Polish & Launch (Weeks 10-12)
+- [x] PRD v2.0 Complete (Realistic, foundation-first approach)
+- [ ] **Phase 1: Foundation (Weeks 1-6)** - NO AI
+  - [ ] Multi-app management
+  - [ ] Test file upload & organization
+  - [ ] Playwright execution engine (parallel, retries)
+  - [ ] Reporting and analytics
+  - [ ] CI/CD integration (webhooks, API)
+  - [ ] UI (Dashboard, Apps, Runs, Reports)
+  
+- [ ] **Phase 2: AI Integration (Weeks 7-12)** - AI FEATURES
+  - [ ] AI test generation (crawl URL → generate tests)
+  - [ ] Self-healing tests (auto-fix selectors)
+  - [ ] Natural language interface (chat)
+  
+- [ ] **Phase 3: Advanced (Weeks 13-18)** - OPTIONAL
+  - [ ] Visual regression testing
+  - [ ] Performance & accessibility testing
+  - [ ] Advanced analytics and insights
 
 ## 🤝 Contributing
 
