@@ -1,343 +1,199 @@
-# 🧪 Qaptain Test Automation Platform
+# Qaptain Test Automation Platform
 
-**Version:** 1.0.0 (Phase 1)  
-**Status:** In Development
+**Modern Browser Automation for Multiple Web Applications**
 
-Modern test automation platform built with Playwright, React, TypeScript, and AI capabilities (coming in Phase 2).
-
----
-
-## 🚀 What is Qaptain?
-
-Qaptain (Quality Captain) is a **centralized test automation platform** that helps teams manage and execute Playwright-based browser tests across multiple applications. It provides:
-
-✅ **Multi-App Management** - Test unlimited web applications from one dashboard  
-✅ **Test Recorder** - Built-in Playwright Inspector for no-code test creation  
-✅ **Parallel Execution** - Run tests concurrently across browsers  
-✅ **Real-Time Reporting** - Live test results with screenshots and videos  
-✅ **CI/CD Ready** - Webhook triggers, API integration, quality gates  
-✅ **Modern Stack** - TypeScript, React, Prisma, BullMQ, Playwright
-
-**Future (Phase 2+):** AI test generation, self-healing tests, natural language interface
+[![Status](https://img.shields.io/badge/status-active--development-brightgreen.svg)](https://github.com/screwgoth/qaptain-test-automation)
+[![Version](https://img.shields.io/badge/version-2.1--PRD-orange.svg)](docs/PRD.md)
+[![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
 ---
 
-## 📋 Phase 1 Features (Current)
+## 🎯 Vision
 
-### Core Platform
-- 🏗️ **Monorepo structure** (backend + frontend)
-- 💾 **PostgreSQL + Prisma ORM** for database
-- ⚡ **Redis + BullMQ** for job queue
-- 🔐 **JWT Authentication** (users, roles, sessions)
-- 🎭 **Playwright Integration** (Chromium, Firefox, WebKit)
-- 📡 **WebSocket** for real-time updates
+Qaptain (Quality Captain) is a centralized test automation platform that manages Playwright tests for multiple web applications, with a progressive roadmap to add AI-powered features over time.
 
-### Apps & Test Management
-- 📱 **Apps CRUD** (create, read, update, delete)
-- 🌍 **Environments** (dev, staging, production)
-- 🗂️ **Test Suites** (organize tests by type)
-- 📄 **Test File Upload** (drag-and-drop, bulk upload)
-- ✏️ **Test Recorder** (Playwright Inspector integration - coming soon)
+**Phase 1 (Foundation):** Solid platform for managing and executing tests  
+**Phase 2+ (AI Features):** Test generation, self-healing, natural language interface
 
-### Test Execution
-- ▶️ **Run tests** manually, scheduled, or via webhook
-- 🔄 **Parallel execution** with configurable workers
-- 🔁 **Auto-retry** on failures
-- 📸 **Screenshots** on failure
-- 🎥 **Video recording** on failure
-- 📊 **Real-time progress** via WebSocket
+## ✨ Phase 1 Features (Foundation + Test Recorder)
 
-### Reporting & Analytics
-- 📈 **Test run reports** (pass/fail, duration, details)
-- 📉 **Historical trends** (pass rate over time)
-- 🐛 **Failure details** (screenshots, videos, stack traces)
-- 📬 **Notifications** (Slack, email - coming soon)
+- 🌐 **Multi-App Platform** - Manage unlimited web applications from one dashboard
+- 🎬 **Test Recorder** - Record tests by clicking through your app (no code required!)
+- 📤 **Test Upload & Organization** - Upload Playwright tests, organize into suites
+- ⚡ **Parallel Execution** - Run tests concurrently across browsers and workers
+- 🔄 **Smart Retries** - Auto-retry failed tests with configurable strategies
+- 📊 **Comprehensive Reporting** - Screenshots, videos, logs, historical trends
+- 🔗 **CI/CD Integration** - Webhooks, API triggers, quality gates
+- 🔔 **Notifications** - Slack, email alerts on pass/fail
 
----
+## 🔮 Phase 2+ Features (Future - AI Powered)
+
+- 🤖 **AI Test Generation** - Point at URL, get test suite
+- 🔧 **Self-Healing Tests** - AI auto-fixes broken selectors
+- 💬 **Natural Language Interface** - "Test login on staging"
+- 📸 **Visual Regression** - AI-powered screenshot comparison
+- 🎯 **Predictive Analytics** - Flaky test detection, insights
 
 ## 🏗️ Tech Stack
 
-| Layer | Technology |
-|-------|------------|
-| **Frontend** | React 18 + TypeScript + Vite + Tailwind CSS |
-| **Backend** | Node.js + Express + TypeScript |
-| **Database** | PostgreSQL 16 + Prisma ORM |
-| **Queue** | BullMQ + Redis |
-| **Browser Automation** | Playwright |
-| **Real-Time** | Socket.IO |
-| **Deployment** | Docker + Docker Compose |
-
----
-
-## 📦 Project Structure
-
-```
-qaptain-test-automation/
-├── backend/                 # Express API
-│   ├── src/
-│   │   ├── config/         # Configuration (database, logger)
-│   │   ├── controllers/    # Request handlers
-│   │   ├── middleware/     # Auth, error handling
-│   │   ├── routes/         # API routes
-│   │   ├── services/       # Business logic
-│   │   ├── workers/        # BullMQ workers
-│   │   └── index.ts        # Entry point
-│   ├── prisma/             # Database schema & migrations
-│   └── package.json
-│
-├── frontend/               # React UI
-│   ├── src/
-│   │   ├── components/     # Reusable components
-│   │   ├── pages/          # Page components
-│   │   ├── services/       # API clients
-│   │   ├── hooks/          # Custom React hooks
-│   │   ├── types/          # TypeScript types
-│   │   ├── styles/         # CSS (Tailwind)
-│   │   ├── App.tsx         # Main app component
-│   │   └── main.tsx        # Entry point
-│   └── package.json
-│
-├── docs/                   # Documentation
-│   └── PRD.md              # Product requirements
-│
-├── docker-compose.yml      # PostgreSQL + Redis setup
-└── package.json            # Root workspace config
-```
-
----
+- **Frontend**: React 18 + TypeScript + Vite + Tailwind CSS (nginx in production)
+- **Backend**: Node.js 20 + Express + TypeScript
+- **Database**: PostgreSQL 16 + Prisma ORM
+- **Queue**: BullMQ + Redis 7
+- **Browser**: Playwright
+- **DevOps**: Docker + Docker Compose (fully containerized)
 
 ## 🚀 Quick Start
 
-### Prerequisites
+### Using Docker (Recommended)
 
-- **Node.js** 20+ (LTS)
-- **npm** 10+
-- **Docker** 24+ (for PostgreSQL & Redis)
+**Prerequisites:**
+- Docker & Docker Compose installed
+- Ports 80, 3000, 5432, 6379 available
 
-### Installation
-
-1. **Clone the repository**
-   ```bash
-   cd /path/to/qaptain-test-automation
-   ```
-
-2. **Install dependencies**
-   ```bash
-   npm install
-   ```
-
-3. **Start Docker services** (PostgreSQL + Redis)
-   ```bash
-   npm run docker:up
-   ```
-
-4. **Setup database**
-   ```bash
-   cd backend
-   npm run db:migrate
-   npm run db:seed
-   ```
-
-5. **Start development servers**
-   ```bash
-   # In root directory
-   npm run dev
-   ```
-
-   This starts:
-   - Backend API: http://localhost:3000
-   - Frontend UI: http://localhost:5173
-
-6. **Login**
-   - Open http://localhost:5173
-   - Use demo credentials:
-     - Email: `demo@qaptain.app`
-     - Password: `demo123`
-
----
-
-## 📖 Detailed Setup
-
-See [SETUP.md](./SETUP.md) for detailed installation and configuration instructions.
-
----
-
-## 🧑‍💻 Development
-
-### Run Backend Only
+**Start Qaptain:**
 ```bash
-npm run dev:backend
+git clone https://github.com/screwgoth/qaptain-test-automation.git
+cd qaptain-test-automation
+./start.sh
 ```
 
-### Run Frontend Only
+That's it! Qaptain will:
+- Build all Docker images
+- Start PostgreSQL, Redis, Backend, and Frontend
+- Run database migrations automatically
+- Seed demo users
+
+**Access:**
+- **Frontend UI:** http://localhost
+- **Backend API:** http://localhost:3000
+
+**Demo Login:**
+- Email: `demo@qaptain.app`
+- Password: `demo123`
+
+**Stop Qaptain:**
 ```bash
-npm run dev:frontend
+./stop.sh
 ```
 
-### Build for Production
-```bash
-npm run build
+### Manual Setup (Development)
+
+See [SETUP.md](SETUP.md) for detailed development setup instructions.
+
+## 📚 Documentation
+
+- **[PRD.md](docs/PRD.md)** - Complete Product Requirements Document
+- **[SETUP.md](SETUP.md)** - Development setup guide
+- **[DOCKER.md](DOCKER.md)** - Docker deployment guide
+- **[API Documentation](#)** - Coming soon
+
+## 🚧 Project Status
+
+**Phase**: Active Development  
+**PRD Version**: 2.1 (Pragmatic, Phase 1 with Test Recorder)  
+**Current**: Week 1-2 Complete (Foundation + Database)  
+**Next**: Week 3-4 (Core Features + Test Recorder)
+
+## 🎯 Roadmap
+
+- [x] PRD v2.1 Complete (Foundation + Test Recorder)
+- [x] **Week 1-2: Foundation** ✅
+  - [x] Monorepo structure (frontend + backend)
+  - [x] Database schema + migrations (Prisma)
+  - [x] Authentication system (JWT)
+  - [x] Docker setup (PostgreSQL + Redis)
+  - [x] BullMQ job queue
+  - [x] Playwright integration
+  - [x] Frontend foundation (React + Vite + Tailwind)
+  - [x] **Full stack Dockerized** (nginx + Node.js)
+  - [x] **Start/stop scripts**
+
+- [ ] **Week 3-4: Core Features**
+  - [ ] Apps management UI
+  - [ ] Test suite management UI
+  - [ ] Test file upload (drag & drop, bulk)
+  - [ ] **Test recorder (Playwright Inspector integration)**
+  - [ ] Enhanced test execution engine
+  - [ ] Results storage (screenshots, videos)
+  
+- [ ] **Week 5-6: UI & Reporting**
+  - [ ] Real-time test run page (WebSocket updates)
+  - [ ] Results page (media viewer, analytics)
+  - [ ] Historical trends & charts
+  - [ ] CI/CD webhooks
+  - [ ] Notifications (Slack, email)
+  
+- [ ] **Phase 2: AI Integration (Weeks 7-12)** - AI FEATURES
+  - [ ] AI test generation (crawl URL → generate tests)
+  - [ ] Self-healing tests (auto-fix selectors)
+  - [ ] Natural language interface (chat)
+  
+- [ ] **Phase 3: Advanced (Weeks 13-18)** - OPTIONAL
+  - [ ] Visual regression testing
+  - [ ] Performance & accessibility testing
+  - [ ] Advanced analytics and insights
+
+## 🏛️ Architecture
+
 ```
-
-### Database Commands
-```bash
-npm run db:migrate      # Run migrations
-npm run db:seed         # Seed database
-npm run db:studio       # Open Prisma Studio (GUI)
+┌─────────────────────────────────────────────┐
+│  Browser → http://localhost                 │
+└─────────────────────────────────────────────┘
+                    │
+                    ▼
+┌─────────────────────────────────────────────┐
+│  Frontend (nginx)                           │
+│  - React SPA                                │
+│  - Proxies /api → backend                   │
+└─────────────────────────────────────────────┘
+                    │
+                    ▼
+┌─────────────────────────────────────────────┐
+│  Backend (Node.js + Express)                │
+│  - REST API (25+ endpoints)                 │
+│  - WebSocket (real-time updates)            │
+│  - Playwright execution                     │
+└─────────────────────────────────────────────┘
+         │                      │
+         ▼                      ▼
+┌─────────────────┐    ┌─────────────────┐
+│  PostgreSQL 16  │    │  Redis 7        │
+│  - 10 tables    │    │  - Job queue    │
+│  - Prisma ORM   │    │  - BullMQ       │
+└─────────────────┘    └─────────────────┘
 ```
-
-### Run Test Worker
-```bash
-cd backend
-npm run worker
-```
-
----
-
-## 🔐 Default Users (Seeded)
-
-| Email | Password | Role |
-|-------|----------|------|
-| admin@qaptain.app | admin123 | ADMIN |
-| demo@qaptain.app | demo123 | USER |
-
-**⚠️ Change these passwords in production!**
-
----
-
-## 📡 API Endpoints
-
-### Authentication
-- `POST /api/auth/register` - Register new user
-- `POST /api/auth/login` - Login user
-- `GET /api/auth/me` - Get current user
-
-### Apps
-- `POST /api/apps` - Create app
-- `GET /api/apps` - List apps
-- `GET /api/apps/:id` - Get app details
-- `PUT /api/apps/:id` - Update app
-- `DELETE /api/apps/:id` - Delete app
-
-### Test Suites
-- `POST /api/test-suites` - Create test suite
-- `GET /api/test-suites` - List test suites
-- `POST /api/test-suites/:id/files` - Upload test file
-
-### Test Runs
-- `POST /api/test-runs` - Create test run
-- `GET /api/test-runs` - List test runs
-- `GET /api/test-runs/:id` - Get run details
-- `GET /api/test-runs/:id/results` - Get test results
-
-### Reports
-- `GET /api/reports/:runId` - Get test run report
-- `GET /api/reports/analytics/trends` - Get historical trends
-
----
-
-## 🐳 Docker Setup
-
-The project uses Docker Compose for PostgreSQL and Redis:
-
-```bash
-# Start services
-docker-compose up -d
-
-# Stop services
-docker-compose down
-
-# View logs
-docker-compose logs -f
-
-# Restart services
-docker-compose restart
-```
-
----
-
-## 🛠️ Environment Variables
-
-Backend (`.env`):
-```env
-DATABASE_URL="postgresql://qaptain:password@localhost:5432/qaptain_db"
-REDIS_HOST="localhost"
-REDIS_PORT=6379
-PORT=3000
-JWT_SECRET="your-secret-key"
-FRONTEND_URL="http://localhost:5173"
-```
-
-See `backend/.env.example` for all options.
-
----
-
-## 📝 Git Branching Strategy
-
-- **master** - Production branch (DO NOT COMMIT DIRECTLY)
-- **dev** - Development integration branch
-- **feature/*** - Feature branches (all work happens here)
-
-**Workflow:**
-1. Create feature branch: `git checkout -b feature/my-feature`
-2. Commit changes: `git commit -m "Add feature"`
-3. Push to GitHub: `git push origin feature/my-feature`
-4. Merge to dev: `git checkout dev && git merge feature/my-feature`
-5. User manually merges dev → master
-
----
-
-## 🗺️ Roadmap
-
-### ✅ Phase 1 (Current) - Foundation
-- [x] Project setup & monorepo structure
-- [x] Database schema & Prisma
-- [x] Authentication system (JWT)
-- [x] Apps & test suite management
-- [x] Test file upload
-- [x] BullMQ job queue
-- [x] Playwright integration
-- [x] Real-time updates (WebSocket)
-- [ ] Test recorder UI (Playwright Inspector)
-- [ ] CI/CD webhooks
-- [ ] Notifications (Slack, email)
-
-### 🔮 Phase 2 (Future) - AI Features
-- [ ] AI test generation (point at URL → generate tests)
-- [ ] Self-healing tests (auto-fix broken selectors)
-- [ ] Natural language interface ("Run smoke tests on staging")
-- [ ] AI insights and recommendations
-
-### 🚀 Phase 3 (Future) - Advanced
-- [ ] Visual regression testing
-- [ ] Performance testing (Lighthouse)
-- [ ] Accessibility testing (WCAG)
-- [ ] Multi-user workflows
-- [ ] API + UI hybrid testing
-
----
 
 ## 🤝 Contributing
 
-This is currently a private project. Contribution guidelines coming soon.
+This is currently a private project. Contributions will be opened after initial release.
 
----
+### Git Workflow
+
+- `master` - Production (manual merges only)
+- `dev` - Development integration
+- `feature/*` - Feature branches (all work happens here)
+
+**Branch Strategy:**
+1. Create feature branch from `dev`
+2. Commit frequently with descriptive messages
+3. Push feature branch to GitHub
+4. Merge to `dev` when complete
+5. Manual merge `dev` → `master` for releases
 
 ## 📄 License
 
-MIT
+MIT License - See [LICENSE](LICENSE) for details
+
+## 🙏 Acknowledgments
+
+Built with:
+- [Playwright](https://playwright.dev/) - Browser automation
+- [Prisma](https://www.prisma.io/) - Database ORM
+- [BullMQ](https://docs.bullmq.io/) - Job queue
+- [React](https://react.dev/) - Frontend framework
+- [Express](https://expressjs.com/) - Backend framework
 
 ---
 
-## 🆘 Support
-
-For issues or questions:
-- Check [SETUP.md](./SETUP.md) for troubleshooting
-- Review [docs/PRD.md](./docs/PRD.md) for product details
-- Open an issue on GitHub
-
----
-
-**Built with ❤️ by ScrewMolt**
-
-*Qaptain - Your Quality Captain for modern test automation*
+**Made with ❤️ by screwgoth**
