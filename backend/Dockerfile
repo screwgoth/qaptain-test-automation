@@ -2,6 +2,9 @@
 # Build context should be repository root
 FROM node:20-alpine AS builder
 
+# Install OpenSSL for Prisma
+RUN apk add --no-cache openssl
+
 WORKDIR /app
 
 # Copy root workspace files
@@ -21,6 +24,9 @@ RUN npm run build
 
 # Production stage
 FROM node:20-alpine
+
+# Install OpenSSL for Prisma
+RUN apk add --no-cache openssl
 
 WORKDIR /app
 

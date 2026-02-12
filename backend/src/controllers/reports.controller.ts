@@ -33,9 +33,9 @@ export const getReport = async (req: AuthRequest, res: Response): Promise<void> 
     throw notFound('Test run not found');
   }
 
-  const failedTests = testRun.testResults.filter(r => r.status === 'FAILED');
-  const passedTests = testRun.testResults.filter(r => r.status === 'PASSED');
-  const skippedTests = testRun.testResults.filter(r => r.status === 'SKIPPED');
+  const failedTests = testRun.testResults.filter((r: { status: string }) => r.status === 'FAILED');
+  const passedTests = testRun.testResults.filter((r: { status: string }) => r.status === 'PASSED');
+  const skippedTests = testRun.testResults.filter((r: { status: string }) => r.status === 'SKIPPED');
 
   const report = {
     testRun,
@@ -89,7 +89,7 @@ export const getTrends = async (req: AuthRequest, res: Response): Promise<void> 
     orderBy: { createdAt: 'asc' },
   });
 
-  const trends = testRuns.map(run => ({
+  const trends = testRuns.map((run: { createdAt: Date; totalTests: number; passed: number; failed: number; durationMs: number | null }) => ({
     date: run.createdAt,
     passRate: run.totalTests > 0 ? (run.passed / run.totalTests) * 100 : 0,
     duration: run.durationMs,

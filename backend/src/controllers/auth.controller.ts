@@ -63,7 +63,7 @@ export const register = async (req: Request, res: Response): Promise<void> => {
       role: user.role,
     } as JwtPayload,
     config.jwt.secret,
-    { expiresIn: config.jwt.expiration }
+    { expiresIn: config.jwt.expiration } as jwt.SignOptions
   );
 
   res.status(201).json({
@@ -113,7 +113,7 @@ export const login = async (req: Request, res: Response): Promise<void> => {
       role: user.role,
     } as JwtPayload,
     config.jwt.secret,
-    { expiresIn: config.jwt.expiration }
+    { expiresIn: config.jwt.expiration } as jwt.SignOptions
   );
 
   res.json({
@@ -178,7 +178,7 @@ export const refreshToken = async (
       role: req.user.role,
     } as JwtPayload,
     config.jwt.secret,
-    { expiresIn: config.jwt.expiration }
+    { expiresIn: config.jwt.expiration } as jwt.SignOptions
   );
 
   res.json({
