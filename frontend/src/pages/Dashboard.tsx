@@ -16,7 +16,7 @@ const Dashboard = () => {
     queryKey: ['apps'],
     queryFn: async () => {
       const response = await api.get('/api/apps');
-      return response.data;
+      return response.data.apps || [];
     },
   });
 
@@ -25,7 +25,7 @@ const Dashboard = () => {
     queryKey: ['test-runs', 'recent'],
     queryFn: async () => {
       const response = await api.get('/api/test-runs?limit=10');
-      return response.data;
+      return response.data.testRuns || [];
     },
   });
 

@@ -21,7 +21,7 @@ const TestRunDetail = () => {
     queryKey: ['test-runs', runId],
     queryFn: async () => {
       const response = await api.get(`/api/test-runs/${runId}`);
-      return response.data;
+      return response.data.testRun;
     },
     enabled: !!runId,
     refetchInterval: (query) => {

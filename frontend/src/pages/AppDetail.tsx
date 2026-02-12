@@ -28,7 +28,7 @@ const AppDetail = () => {
     queryKey: ['apps', appId],
     queryFn: async () => {
       const response = await api.get(`/api/apps/${appId}`);
-      return response.data;
+      return response.data.app;
     },
     enabled: !!appId,
   });

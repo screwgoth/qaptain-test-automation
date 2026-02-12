@@ -21,7 +21,7 @@ const Apps = () => {
     queryKey: ['apps'],
     queryFn: async () => {
       const response = await api.get('/api/apps');
-      return response.data;
+      return response.data.apps || [];
     },
   });
 
