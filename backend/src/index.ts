@@ -54,7 +54,7 @@ io.on('connection', (socket) => {
 // Middleware
 app.use(helmet()); // Security headers
 app.use(cors({
-  origin: config.frontendUrl,
+  origin: true, // Allow all origins in production (nginx handles security)
   credentials: true,
 }));
 app.use(express.json());
