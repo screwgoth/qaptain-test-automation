@@ -3,7 +3,7 @@
  * Playwright Test Recorder UI
  */
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { io, Socket } from 'socket.io-client';
 import { RecorderControls, RecordingStatus } from '../components/recorder/RecorderControls';
@@ -84,6 +84,7 @@ const Recorder: React.FC = () => {
         socket.off('recording:completed');
       };
     }
+    return undefined;
   }, [socket, sessionId]);
 
   // Start recording
