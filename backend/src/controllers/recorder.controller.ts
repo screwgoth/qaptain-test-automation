@@ -14,26 +14,28 @@ const prisma = new PrismaClient();
 /**
  * Start a new recording session
  */
-export const startRecording = async (req: Request, res: Response) => {
+export const startRecording = async (req: Request, res: Response): Promise<void> => {
   try {
     const { targetUrl, browserType, viewport, appId, name } = req.body;
     const userId = (req as any).user?.id;
 
     if (!targetUrl) {
-      return res.status(400).json({ error: 'Target URL is required' });
+      res.status(400).json({ error: 'Target URL is required' });
+      return;
     }
 
     // Validate URL
     try {
       new URL(targetUrl);
     } catch {
-      return res.status(400).json({ error: 'Invalid target URL' });
+      res.status(400).json({ error: 'Invalid target URL' });
+      return;
     }
 
     const sessionId = uuidv4();
 
     // Create database record
-    const dbSession = await prisma.recordingSession.create({
+    await prisma.recordingSession.create({
       data: {
         id: sessionId,
         name: name || `Recording ${new Date().toISOString()}`,
@@ -92,13 +94,14 @@ export const startRecording = async (req: Request, res: Response) => {
 /**
  * Stop recording and get results
  */
-export const stopRecording = async (req: Request, res: Response) => {
+export const stopRecording = async (req: Request, res: Response): Promise<void> => {
   try {
     const { sessionId } = req.params;
 
     const session = recorderService.getSession(sessionId);
     if (!session) {
-      return res.status(404).json({ error: 'Recording session not found' });
+      res.status(404).json({ error: 'Recording session not found' });
+      return;
     }
 
     // Stop recording and generate code
@@ -133,7 +136,7 @@ export const stopRecording = async (req: Request, res: Response) => {
 /**
  * Pause recording
  */
-export const pauseRecording = async (req: Request, res: Response) => {
+export const pauseRecording = async (req: Request, res: Response): Promise<void> => {
   try {
     const { sessionId } = req.params;
 
@@ -155,7 +158,7 @@ export const pauseRecording = async (req: Request, res: Response) => {
 /**
  * Resume recording
  */
-export const resumeRecording = async (req: Request, res: Response) => {
+export const resumeRecording = async (req: Request, res: Response): Promise<void> => {
   try {
     const { sessionId } = req.params;
 
@@ -177,7 +180,7 @@ export const resumeRecording = async (req: Request, res: Response) => {
 /**
  * Get recording session status and actions
  */
-export const getRecordingStatus = async (req: Request, res: Response) => {
+export const getRecordingStatus = async (req: Request, res: Response): Promise<void> => {
   try {
     const { sessionId } = req.params;
 
@@ -187,7 +190,8 @@ export const getRecordingStatus = async (req: Request, res: Response) => {
     });
 
     if (!session && !dbSession) {
-      return res.status(404).json({ error: 'Recording session not found' });
+      res.status(404).json({ error: 'Recording session not found' });
+      return;
     }
 
     res.json({
@@ -208,13 +212,14 @@ export const getRecordingStatus = async (req: Request, res: Response) => {
 /**
  * Delete an action from recording
  */
-export const deleteAction = async (req: Request, res: Response) => {
+export const deleteAction = async (req: Request, res: Response): Promise<void> => {
   try {
     const { sessionId, actionId } = req.params;
 
     const deleted = recorderService.deleteAction(sessionId, actionId);
     if (!deleted) {
-      return res.status(404).json({ error: 'Action not found' });
+      res.status(404).json({ error: 'Action not found' });
+      return;
     }
 
     io.to(`recorder:${sessionId}`).emit('action:deleted', { actionId });
@@ -228,14 +233,15 @@ export const deleteAction = async (req: Request, res: Response) => {
 /**
  * Update an action in recording
  */
-export const updateAction = async (req: Request, res: Response) => {
+export const updateAction = async (req: Request, res: Response): Promise<void> => {
   try {
     const { sessionId, actionId } = req.params;
     const updates = req.body;
 
     const updated = recorderService.updateAction(sessionId, actionId, updates);
     if (!updated) {
-      return res.status(404).json({ error: 'Action not found' });
+      res.status(404).json({ error: 'Action not found' });
+      return;
     }
 
     io.to(`recorder:${sessionId}`).emit('action:updated', { actionId, updates });
@@ -249,13 +255,14 @@ export const updateAction = async (req: Request, res: Response) => {
 /**
  * Add assertion to recording
  */
-export const addAssertion = async (req: Request, res: Response) => {
+export const addAssertion = async (req: Request, res: Response): Promise<void> => {
   try {
     const { sessionId } = req.params;
     const { selector, type, expected } = req.body;
 
     if (!selector || !type) {
-      return res.status(400).json({ error: 'Selector and type are required' });
+      res.status(400).json({ error: 'Selector and type are required' });
+      return;
     }
 
     recorderService.addAssertion(sessionId, { selector, type, expected });
@@ -269,13 +276,14 @@ export const addAssertion = async (req: Request, res: Response) => {
 /**
  * Take screenshot during recording
  */
-export const takeScreenshot = async (req: Request, res: Response) => {
+export const takeScreenshot = async (req: Request, res: Response): Promise<void> => {
   try {
     const { sessionId } = req.params;
 
     const screenshotPath = await recorderService.takeScreenshot(sessionId);
     if (!screenshotPath) {
-      return res.status(404).json({ error: 'Session not found' });
+      res.status(404).json({ error: 'Session not found' });
+      return;
     }
 
     res.json({ success: true, path: screenshotPath });
@@ -287,13 +295,14 @@ export const takeScreenshot = async (req: Request, res: Response) => {
 /**
  * Save recording as test file
  */
-export const saveAsTestFile = async (req: Request, res: Response) => {
+export const saveAsTestFile = async (req: Request, res: Response): Promise<void> => {
   try {
     const { sessionId } = req.params;
     const { suiteId, fileName, description } = req.body;
 
     if (!suiteId || !fileName) {
-      return res.status(400).json({ error: 'Suite ID and file name are required' });
+      res.status(400).json({ error: 'Suite ID and file name are required' });
+      return;
     }
 
     // Get recording session
@@ -302,11 +311,13 @@ export const saveAsTestFile = async (req: Request, res: Response) => {
     });
 
     if (!dbSession) {
-      return res.status(404).json({ error: 'Recording session not found' });
+      res.status(404).json({ error: 'Recording session not found' });
+      return;
     }
 
     if (!dbSession.generatedCode) {
-      return res.status(400).json({ error: 'Recording has no generated code. Stop recording first.' });
+      res.status(400).json({ error: 'Recording has no generated code. Stop recording first.' });
+      return;
     }
 
     // Create test file
@@ -338,7 +349,7 @@ export const saveAsTestFile = async (req: Request, res: Response) => {
 /**
  * Get user's recording history
  */
-export const getRecordingHistory = async (req: Request, res: Response) => {
+export const getRecordingHistory = async (req: Request, res: Response): Promise<void> => {
   try {
     const userId = (req as any).user?.id;
     const { limit = 20, offset = 0 } = req.query;
@@ -374,7 +385,7 @@ export const getRecordingHistory = async (req: Request, res: Response) => {
 /**
  * Regenerate code from actions
  */
-export const regenerateCode = async (req: Request, res: Response) => {
+export const regenerateCode = async (req: Request, res: Response): Promise<void> => {
   try {
     const { sessionId } = req.params;
 
@@ -383,7 +394,8 @@ export const regenerateCode = async (req: Request, res: Response) => {
     });
 
     if (!dbSession) {
-      return res.status(404).json({ error: 'Recording session not found' });
+      res.status(404).json({ error: 'Recording session not found' });
+      return;
     }
 
     const actions = (dbSession.actions as any[]) || [];

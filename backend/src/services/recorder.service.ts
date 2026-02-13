@@ -92,7 +92,7 @@ class RecorderService extends EventEmitter {
     session.status = 'recording';
     this.emit('sessionStarted', { sessionId, targetUrl });
 
-    return { wsEndpoint: browser.wsEndpoint?.() || '' };
+    return { wsEndpoint: '' };
   }
 
   /**
@@ -204,10 +204,11 @@ class RecorderService extends EventEmitter {
             path.unshift(selector);
             break;
           }
-          const parent = current.parentElement;
+          const parent: Element | null = current.parentElement;
           if (parent) {
+            const currentTag = current.tagName;
             const siblings = Array.from(parent.children).filter(
-              (c) => c.tagName === current!.tagName
+              (c: Element) => c.tagName === currentTag
             );
             if (siblings.length > 1) {
               const index = siblings.indexOf(current) + 1;
