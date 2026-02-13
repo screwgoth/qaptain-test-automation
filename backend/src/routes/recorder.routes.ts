@@ -33,6 +33,14 @@ router.use(authenticate);
 router.post('/start', startRecording);
 
 /**
+ * @route   GET /api/recorder/history
+ * @desc    Get user's recording history
+ * @query   { limit?, offset? }
+ * NOTE: Must be before /:sessionId to avoid being matched as sessionId
+ */
+router.get('/history', getRecordingHistory);
+
+/**
  * @route   POST /api/recorder/:sessionId/stop
  * @desc    Stop recording and get generated code
  */
@@ -87,13 +95,6 @@ router.post('/:sessionId/screenshot', takeScreenshot);
  * @body    { suiteId, fileName, description? }
  */
 router.post('/:sessionId/save', saveAsTestFile);
-
-/**
- * @route   GET /api/recorder/history
- * @desc    Get user's recording history
- * @query   { limit?, offset? }
- */
-router.get('/history', getRecordingHistory);
 
 /**
  * @route   POST /api/recorder/:sessionId/regenerate
