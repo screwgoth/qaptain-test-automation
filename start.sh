@@ -37,6 +37,28 @@ echo ""
 echo "⏳ Waiting for services to be healthy..."
 sleep 5
 
+# Run database migrations
+echo ""
+echo "🗄️  Running database migrations..."
+$DOCKER_COMPOSE exec -T backend sh -c "npx prisma migrate deploy" || {
+    echo "⚠️  Migration failed or already up to date"
+}
+
+# Run database seed (only if users table is empty)
+echo ""
+echo "🌱 Checking if seeding is needed..."
+USER_COUNT=$($DOCKER_COMPOSE exec -T postgres psql -U qaptain -d qaptain_db -t -c "SELECT COUNT(*) FROM users;" 2>/dev/null | tr -d ' ' || echo "0")
+if [ "$USER_COUNT" = "0" ]; then
+    echo "🌱 Seeding database..."
+    # Run seed from host (tsx not available in production container)
+    cd backend && DATABASE_URL="postgresql://qaptain:qaptain_dev_password@localhost:5432/qaptain_db" npx tsx prisma/seed.ts && cd .. || {
+        echo "⚠️  Seed failed - you may need to run it manually:"
+        echo "   cd backend && DATABASE_URL=\"postgresql://qaptain:qaptain_dev_password@localhost:5432/qaptain_db\" npx tsx prisma/seed.ts"
+    }
+else
+    echo "✅ Database already seeded ($USER_COUNT users found)"
+fi
+
 # Check service health
 echo ""
 echo "🔍 Checking service status..."
