@@ -33,10 +33,10 @@ WORKDIR /app
 # Copy package files
 COPY --from=builder /app/backend/package*.json ./
 
-# Install production dependencies only
-RUN npm install --only=production
+# Install production dependencies (includes tsx for seeding)
+RUN npm install --omit=dev
 
-# Copy Prisma schema
+# Copy Prisma schema, migrations, and seed
 COPY --from=builder /app/backend/prisma ./prisma
 
 # Generate Prisma client
