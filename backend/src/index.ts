@@ -26,6 +26,7 @@ import reportsRoutes from './routes/reports.routes';
 import webhooksRoutes from './routes/webhooks.routes';
 import environmentsRoutes from './routes/environments.routes';
 import testFilesRoutes from './routes/testFiles.routes';
+import recorderRoutes from './routes/recorder.routes';
 
 // Load environment variables
 dotenv.config();
@@ -46,6 +47,24 @@ export const io = new SocketIOServer(httpServer, {
 io.on('connection', (socket) => {
   logger.info(`Client connected: ${socket.id}`);
   
+  // Join recorder session room
+  socket.on('recorder:join', (sessionId: string) => {
+    socket.join(`recorder:${sessionId}`);
+    logger.info(`Client ${socket.id} joined recorder session: ${sessionId}`);
+  });
+
+  // Leave recorder session room
+  socket.on('recorder:leave', (sessionId: string) => {
+    socket.leave(`recorder:${sessionId}`);
+    logger.info(`Client ${socket.id} left recorder session: ${sessionId}`);
+  });
+
+  // Join test run room for real-time updates
+  socket.on('testrun:join', (runId: string) => {
+    socket.join(`testrun:${runId}`);
+    logger.info(`Client ${socket.id} joined test run: ${runId}`);
+  });
+
   socket.on('disconnect', () => {
     logger.info(`Client disconnected: ${socket.id}`);
   });
@@ -80,6 +99,7 @@ app.use('/api/reports', reportsRoutes);
 app.use('/api/webhooks', webhooksRoutes);
 app.use('/api/environments', environmentsRoutes);
 app.use('/api/test-files', testFilesRoutes);
+app.use('/api/recorder', recorderRoutes);
 
 // 404 handler
 app.use((req, res) => {

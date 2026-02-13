@@ -11,6 +11,7 @@ import Dashboard from './pages/Dashboard';
 import Apps from './pages/Apps';
 import AppDetail from './pages/AppDetail';
 import TestRunDetail from './pages/TestRunDetail';
+import Recorder from './pages/Recorder';
 
 function App() {
   return (
@@ -52,6 +53,15 @@ function App() {
             element={
               <ProtectedRoute>
                 <TestRunDetail />
+              </ProtectedRoute>
+            }
+          />
+          
+          <Route
+            path="/recorder"
+            element={
+              <ProtectedRoute>
+                <Recorder />
               </ProtectedRoute>
             }
           />

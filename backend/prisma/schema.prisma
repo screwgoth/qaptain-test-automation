@@ -309,3 +309,36 @@ model AIConversation {
   
   @@map("ai_conversations")
 }
+
+// ============================================
+// Recording Sessions (Playwright Test Recorder)
+// ============================================
+
+model RecordingSession {
+  id                String              @id @default(uuid())
+  name              String?
+  targetUrl         String
+  status            RecordingStatus     @default(IDLE)
+  actions           Json[]              @default([])  // Array of recorded actions
+  generatedCode     String?             @db.Text      // Generated Playwright code
+  browserType       String              @default("chromium")
+  viewport          Json?               // { width, height }
+  createdAt         DateTime            @default(now())
+  updatedAt         DateTime            @updatedAt
+  completedAt       DateTime?
+  
+  // Relations
+  userId            String
+  appId             String?
+  
+  @@index([userId, createdAt])
+  @@map("recording_sessions")
+}
+
+enum RecordingStatus {
+  IDLE
+  RECORDING
+  PAUSED
+  COMPLETED
+  ERROR
+}
