@@ -115,7 +115,7 @@ class RecorderService extends EventEmitter {
             const actionData = JSON.parse(text.replace('QAPTAIN_ACTION:', ''));
             this.handleRecordedAction(sessionId, actionData);
           }
-        } catch (e) {
+        } catch {
           // Not a Qaptain action, ignore
         }
       }
