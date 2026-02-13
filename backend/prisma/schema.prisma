@@ -1,0 +1,344 @@
+// Qaptain Test Automation Platform - Database Schema
+// Prisma Schema for PostgreSQL
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ============================================
+// User Management
+// ============================================
+
+model User {
+  id            String   @id @default(uuid())
+  email         String   @unique
+  password      String
+  name          String?
+  role          UserRole @default(USER)
+  isActive      Boolean  @default(true)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  
+  // Relations
+  apps          App[]
+  testRuns      TestRun[]
+  
+  @@map("users")
+}
+
+enum UserRole {
+  ADMIN
+  USER
+  VIEWER
+}
+
+// ============================================
+// Application Management
+// ============================================
+
+model App {
+  id                String      @id @default(uuid())
+  name              String
+  description       String?
+  url               String      // Default/dev URL
+  stagingUrl        String?
+  productionUrl     String?
+  authType          AuthType    @default(NONE)
+  authCredentials   Json?       // Encrypted credentials
+  status            AppStatus   @default(ACTIVE)
+  tags              String[]    @default([])
+  createdAt         DateTime    @default(now())
+  updatedAt         DateTime    @updatedAt
+  
+  // Relations
+  userId            String
+  user              User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  environments      Environment[]
+  testSuites        TestSuite[]
+  testRuns          TestRun[]
+  pageObjects       PageObject[]
+  
+  @@map("apps")
+}
+
+enum AuthType {
+  NONE
+  BASIC
+  OAUTH
+  COOKIES
+  JWT
+  CUSTOM
+}
+
+enum AppStatus {
+  ACTIVE
+  ARCHIVED
+  MAINTENANCE
+}
+
+// ============================================
+// Environments
+// ============================================
+
+model Environment {
+  id                String   @id @default(uuid())
+  name              String   // dev, staging, production, etc.
+  baseUrl           String
+  variables         Json?    // Environment-specific variables
+  isDefault         Boolean  @default(false)
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  
+  // Relations
+  appId             String
+  app               App      @relation(fields: [appId], references: [id], onDelete: Cascade)
+  testRuns          TestRun[]
+  
+  @@unique([appId, name])
+  @@map("environments")
+}
+
+// ============================================
+// Page Objects (for AI-generated tests - Phase 2)
+// ============================================
+
+model PageObject {
+  id                String   @id @default(uuid())
+  name              String
+  urlPattern        String?
+  selectors         Json     // Element selectors
+  code              String   @db.Text // TypeScript class code
+  aiGenerated       Boolean  @default(false)
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  
+  // Relations
+  appId             String
+  app               App      @relation(fields: [appId], references: [id], onDelete: Cascade)
+  
+  @@map("page_objects")
+}
+
+// ============================================
+// Test Suites
+// ============================================
+
+model TestSuite {
+  id                String       @id @default(uuid())
+  name              String
+  description       String?
+  type              SuiteType    @default(CUSTOM)
+  config            Json?        // Browser, timeout, retries, etc.
+  isEnabled         Boolean      @default(true)
+  createdAt         DateTime     @default(now())
+  updatedAt         DateTime     @updatedAt
+  
+  // Relations
+  appId             String
+  app               App          @relation(fields: [appId], references: [id], onDelete: Cascade)
+  testFiles         TestFile[]
+  testRuns          TestRun[]
+  
+  @@map("test_suites")
+}
+
+enum SuiteType {
+  SMOKE
+  REGRESSION
+  E2E
+  INTEGRATION
+  CUSTOM
+}
+
+// ============================================
+// Test Files
+// ============================================
+
+model TestFile {
+  id                String       @id @default(uuid())
+  name              String       // e.g., "login.spec.ts"
+  path              String       // Relative path in suite
+  code              String       @db.Text // Playwright test code
+  description       String?
+  tags              String[]     @default([])
+  priority          Int          @default(1) // 0=critical, 1=high, 2=medium, 3=low
+  estimatedDuration Int?         // Milliseconds
+  isEnabled         Boolean      @default(true)
+  aiGenerated       Boolean      @default(false)
+  createdAt         DateTime     @default(now())
+  updatedAt         DateTime     @updatedAt
+  
+  // Relations
+  suiteId           String
+  suite             TestSuite    @relation(fields: [suiteId], references: [id], onDelete: Cascade)
+  testResults       TestResult[]
+  
+  @@unique([suiteId, path])
+  @@map("test_files")
+}
+
+// ============================================
+// Test Runs
+// ============================================
+
+model TestRun {
+  id                String       @id @default(uuid())
+  trigger           RunTrigger   @default(MANUAL)
+  status            RunStatus    @default(QUEUED)
+  totalTests        Int          @default(0)
+  passed            Int          @default(0)
+  failed            Int          @default(0)
+  skipped           Int          @default(0)
+  durationMs        Int?
+  browser           String       @default("chromium") // chromium, firefox, webkit
+  workers           Int          @default(4)
+  headless          Boolean      @default(true)
+  screenshot        String       @default("on-failure") // on-failure, always, never
+  video             String       @default("on-failure")
+  retries           Int          @default(2)
+  startedAt         DateTime?
+  completedAt       DateTime?
+  createdAt         DateTime     @default(now())
+  
+  // Relations
+  appId             String
+  app               App          @relation(fields: [appId], references: [id], onDelete: Cascade)
+  suiteId           String?
+  suite             TestSuite?   @relation(fields: [suiteId], references: [id], onDelete: SetNull)
+  environmentId     String?
+  environment       Environment? @relation(fields: [environmentId], references: [id], onDelete: SetNull)
+  userId            String?
+  user              User?        @relation(fields: [userId], references: [id], onDelete: SetNull)
+  testResults       TestResult[]
+  
+  @@index([appId, createdAt])
+  @@index([status])
+  @@map("test_runs")
+}
+
+enum RunTrigger {
+  MANUAL
+  SCHEDULED
+  WEBHOOK
+  API
+  AI
+}
+
+enum RunStatus {
+  QUEUED
+  RUNNING
+  COMPLETED
+  FAILED
+  CANCELLED
+}
+
+// ============================================
+// Test Results
+// ============================================
+
+model TestResult {
+  id                String       @id @default(uuid())
+  status            TestStatus   @default(PENDING)
+  errorMessage      String?      @db.Text
+  stackTrace        String?      @db.Text
+  screenshotUrl     String?
+  videoUrl          String?
+  traceUrl          String?
+  durationMs        Int?
+  retryCount        Int          @default(0)
+  selfHealed        Boolean      @default(false)
+  aiInsights        String?      @db.Text
+  createdAt         DateTime     @default(now())
+  
+  // Relations
+  runId             String
+  run               TestRun      @relation(fields: [runId], references: [id], onDelete: Cascade)
+  testFileId        String?
+  testFile          TestFile?    @relation(fields: [testFileId], references: [id], onDelete: SetNull)
+  selfHealingLogs   SelfHealingLog[]
+  
+  @@index([runId, status])
+  @@map("test_results")
+}
+
+enum TestStatus {
+  PENDING
+  RUNNING
+  PASSED
+  FAILED
+  SKIPPED
+  FLAKY
+}
+
+// ============================================
+// Self-Healing Logs (Phase 2 - AI Features)
+// ============================================
+
+model SelfHealingLog {
+  id                String       @id @default(uuid())
+  originalSelector  String
+  newSelector       String
+  strategy          String       // text-matching, position, aria-label, etc.
+  success           Boolean
+  confidenceScore   Float        // 0.0 to 1.0
+  createdAt         DateTime     @default(now())
+  
+  // Relations
+  resultId          String
+  result            TestResult   @relation(fields: [resultId], references: [id], onDelete: Cascade)
+  
+  @@map("self_healing_logs")
+}
+
+// ============================================
+// AI Conversations (Phase 2 - Natural Language Interface)
+// ============================================
+
+model AIConversation {
+  id                String       @id @default(uuid())
+  userId            String?
+  message           String       @db.Text
+  response          String?      @db.Text
+  action            Json?        // What AI did (ran tests, generated, etc.)
+  createdAt         DateTime     @default(now())
+  
+  @@map("ai_conversations")
+}
+
+// ============================================
+// Recording Sessions (Playwright Test Recorder)
+// ============================================
+
+model RecordingSession {
+  id                String              @id @default(uuid())
+  name              String?
+  targetUrl         String
+  status            RecordingStatus     @default(IDLE)
+  actions           Json[]              @default([])  // Array of recorded actions
+  generatedCode     String?             @db.Text      // Generated Playwright code
+  browserType       String              @default("chromium")
+  viewport          Json?               // { width, height }
+  createdAt         DateTime            @default(now())
+  updatedAt         DateTime            @updatedAt
+  completedAt       DateTime?
+  
+  // Relations
+  userId            String
+  appId             String?
+  
+  @@index([userId, createdAt])
+  @@map("recording_sessions")
+}
+
+enum RecordingStatus {
+  IDLE
+  RECORDING
+  PAUSED
+  COMPLETED
+  ERROR
+}
