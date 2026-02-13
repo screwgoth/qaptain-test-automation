@@ -31,7 +31,7 @@ const CreateTestSuiteModal = ({ appId, onClose, onSuccess }: CreateTestSuiteModa
 
   const createMutation = useMutation({
     mutationFn: async (data: CreateTestSuiteData) => {
-      const response = await api.post(`/api/apps/${appId}/test-suites`, data);
+      const response = await api.post(`/api/test-suites`, data);
       return response.data;
     },
     onSuccess: () => {
