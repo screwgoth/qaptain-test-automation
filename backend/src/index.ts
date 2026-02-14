@@ -80,6 +80,9 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(requestLogger); // Custom request logger
 
+// Serve static files (screenshots, videos)
+app.use('/uploads', express.static('uploads'));
+
 // Health check endpoint
 app.get('/health', (req, res) => {
   res.json({
@@ -115,12 +118,20 @@ app.use(errorHandler);
 // Start server
 const PORT = config.port;
 
-httpServer.listen(PORT, () => {
+httpServer.listen(PORT, async () => {
   logger.info(`🚀 Qaptain API Server running on port ${PORT}`);
   logger.info(`📝 Environment: ${config.nodeEnv}`);
   logger.info(`🔗 Frontend URL: ${config.frontendUrl}`);
   logger.info(`💾 Database: Connected`);
   logger.info(`📊 Redis: Connected`);
+  
+  // Start test worker
+  try {
+    await import('./workers/testWorker');
+    logger.info(`🔄 Test worker started`);
+  } catch (error) {
+    logger.error('Failed to start test worker:', error);
+  }
 });
 
 // Graceful shutdown
