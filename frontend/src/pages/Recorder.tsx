@@ -11,7 +11,8 @@ import { ActionList, RecordedAction } from '../components/recorder/ActionList';
 import { CodePreview } from '../components/recorder/CodePreview';
 import api from '../services/api';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+// Use relative URL for socket.io - nginx proxies /socket.io to backend
+const API_URL = import.meta.env.VITE_API_URL || '';
 
 const Recorder: React.FC = () => {
   const navigate = useNavigate();
