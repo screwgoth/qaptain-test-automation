@@ -11,9 +11,6 @@ import { ActionList, RecordedAction } from '../components/recorder/ActionList';
 import { CodePreview } from '../components/recorder/CodePreview';
 import api from '../services/api';
 
-// Use relative URL for socket.io - nginx proxies /socket.io to backend
-const API_URL = import.meta.env.VITE_API_URL || '';
-
 const Recorder: React.FC = () => {
   const navigate = useNavigate();
   const [targetUrl, setTargetUrl] = useState('');
@@ -29,8 +26,11 @@ const Recorder: React.FC = () => {
 
   // Initialize Socket.IO connection
   useEffect(() => {
-    const newSocket = io(API_URL, {
-      transports: ['websocket'],
+    // Use current origin for socket.io - nginx proxies /socket.io to backend
+    const socketUrl = import.meta.env.VITE_API_URL || window.location.origin;
+    const newSocket = io(socketUrl, {
+      path: '/socket.io',
+      transports: ['websocket', 'polling'],
     });
 
     newSocket.on('connect', () => {
