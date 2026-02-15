@@ -48,7 +48,8 @@ export const startRecording = async (req: Request, res: Response): Promise<void>
       },
     });
 
-    // Start Playwright session (headless by default for server environments)
+    // Start Playwright session (headless by default in Docker - no X11 display)
+    // Screenshot preview is captured and returned for UI display
     const { wsEndpoint, screenshotBase64 } = await recorderService.startSession(sessionId, targetUrl, {
       browserType,
       viewport,
