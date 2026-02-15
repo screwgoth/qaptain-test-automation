@@ -1,31 +1,204 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
   body {
-    @apply text-gray-900 antialiased;
+    @apply text-slate-100 antialiased bg-slate-950;
+    background: radial-gradient(at 0% 0%, rgba(6, 182, 212, 0.15) 0px, transparent 50%), 
+                radial-gradient(at 100% 100%, rgba(99, 102, 241, 0.1) 0px, transparent 50%),
+                #020617;
+    background-attachment: fixed;
+  }
+  
+  /* Noise texture overlay */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='3.5' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.03'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 1;
+  }
+  
+  /* Ensure content is above noise */
+  #root {
+    position: relative;
+    z-index: 2;
   }
 }
 
 @layer components {
+  /* Buttons */
   .btn {
-    @apply px-4 py-2 rounded-lg font-medium transition-colors;
+    @apply px-5 py-2.5 rounded-xl font-medium transition-all duration-200 
+           inline-flex items-center gap-2 shadow-elevation-1
+           hover:shadow-elevation-2 hover:-translate-y-0.5;
   }
   
   .btn-primary {
-    @apply bg-primary-600 text-white hover:bg-primary-700;
+    @apply bg-gradient-to-r from-primary-600 to-primary-500 
+           text-white hover:from-primary-500 hover:to-primary-400
+           shadow-primary-500/20;
   }
   
   .btn-secondary {
-    @apply bg-gray-200 text-gray-900 hover:bg-gray-300;
+    @apply bg-slate-800 text-slate-100 hover:bg-slate-700
+           border border-slate-700 hover:border-slate-600;
   }
   
+  .btn-ghost {
+    @apply bg-transparent text-slate-300 hover:bg-slate-800/50
+           border border-slate-700/50 hover:border-slate-600;
+  }
+  
+  /* Cards */
   .card {
-    @apply bg-white rounded-lg shadow-sm border border-gray-200 p-6;
+    @apply bg-slate-900/60 backdrop-blur-sm rounded-2xl 
+           border border-slate-800/80 p-6
+           shadow-glass hover:shadow-glass-lg
+           transition-all duration-300
+           animate-fade-in;
   }
   
+  .card-glass {
+    @apply bg-gradient-to-br from-slate-800/40 to-slate-900/40
+           backdrop-blur-xl rounded-2xl border border-slate-700/50
+           shadow-glass-lg p-6;
+  }
+  
+  .stat-card {
+    @apply card-glass relative overflow-hidden;
+  }
+  
+  .stat-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--tw-gradient-from), var(--tw-gradient-to));
+  }
+  
+  /* Inputs */
   .input {
-    @apply w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent;
+    @apply w-full px-4 py-3 bg-slate-900 border border-slate-700 
+           rounded-xl text-slate-100 placeholder-slate-500
+           focus:ring-2 focus:ring-primary-500 focus:border-transparent
+           transition-all duration-200;
+  }
+  
+  .input:hover {
+    @apply border-slate-600;
+  }
+  
+  /* Select */
+  .select {
+    @apply input appearance-none bg-slate-900 bg-no-repeat;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3E%3Cpath stroke='%2394a3b8' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3E%3C/svg%3E");
+    background-position: right 0.75rem center;
+    background-size: 1.25rem;
+  }
+  
+  /* Labels */
+  .label {
+    @apply block text-sm font-medium text-slate-300 mb-2;
+  }
+  
+  /* Badges */
+  .badge {
+    @apply inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold
+           border backdrop-blur-sm;
+  }
+  
+  .badge-success {
+    @apply bg-emerald-500/10 text-emerald-400 border-emerald-500/20;
+  }
+  
+  .badge-error {
+    @apply bg-red-500/10 text-red-400 border-red-500/20;
+  }
+  
+  .badge-warning {
+    @apply bg-amber-500/10 text-amber-400 border-amber-500/20;
+  }
+  
+  .badge-info {
+    @apply bg-blue-500/10 text-blue-400 border-blue-500/20;
+  }
+  
+  .badge-default {
+    @apply bg-slate-500/10 text-slate-400 border-slate-500/20;
+  }
+  
+  /* Status indicators with pulse */
+  .status-dot {
+    @apply w-2 h-2 rounded-full inline-block;
+  }
+  
+  .status-running {
+    @apply bg-blue-500 animate-pulse-slow;
+  }
+  
+  .status-completed {
+    @apply bg-emerald-500;
+  }
+  
+  .status-failed {
+    @apply bg-red-500;
+  }
+  
+  .status-queued {
+    @apply bg-amber-500 animate-pulse;
+  }
+  
+  /* Tables */
+  .table-container {
+    @apply overflow-x-auto rounded-xl border border-slate-800;
+  }
+  
+  .table {
+    @apply min-w-full divide-y divide-slate-800;
+  }
+  
+  .table thead {
+    @apply bg-slate-900/50;
+  }
+  
+  .table th {
+    @apply px-6 py-4 text-left text-xs font-semibold text-slate-400 
+           uppercase tracking-wider;
+  }
+  
+  .table tbody {
+    @apply divide-y divide-slate-800/50;
+  }
+  
+  .table td {
+    @apply px-6 py-4 text-sm text-slate-300;
+  }
+  
+  .table tr {
+    @apply transition-colors hover:bg-slate-800/30;
+  }
+  
+  /* Links */
+  .link {
+    @apply text-primary-400 hover:text-primary-300 
+           transition-colors underline-offset-2 hover:underline;
+  }
+  
+  /* Headings */
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-display;
+  }
+  
+  /* Loading spinner */
+  .spinner {
+    @apply animate-spin rounded-full border-2 border-slate-700 
+           border-t-primary-500;
   }
 }
