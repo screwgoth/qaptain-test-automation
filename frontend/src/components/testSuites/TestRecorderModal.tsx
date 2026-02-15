@@ -1,9 +1,9 @@
 /**
  * Test Recorder Modal
- * Integrated Playwright test recorder within a modal
+ * Headless Playwright test recorder with screenshot preview
  */
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { io, Socket } from 'socket.io-client';
 import api from '../../services/api';
 
@@ -51,6 +51,15 @@ const TestRecorderModal = ({ suiteId, appUrl, onClose, onSaved }: TestRecorderMo
   const [loading, setLoading] = useState(false);
   const [fileName, setFileName] = useState('');
   const [saving, setSaving] = useState(false);
+  
+  // Headless mode state
+  const [screenshot, setScreenshot] = useState<string | null>(null);
+  const [actionType, setActionType] = useState<string>('click');
+  const [actionSelector, setActionSelector] = useState('');
+  const [actionValue, setActionValue] = useState('');
+  const [executing, setExecuting] = useState(false);
+  
+  const screenshotRef = useRef<HTMLImageElement>(null);
 
   // Initialize Socket.IO connection
   useEffect(() => {
@@ -66,7 +75,6 @@ const TestRecorderModal = ({ suiteId, appUrl, onClose, onSaved }: TestRecorderMo
 
     newSocket.on('connect_error', (err) => {
       console.error('Socket connection error:', err);
-      setError('Failed to connect to recording service');
     });
 
     setSocket(newSocket);
@@ -76,7 +84,7 @@ const TestRecorderModal = ({ suiteId, appUrl, onClose, onSaved }: TestRecorderMo
     };
   }, []);
 
-  // Join/leave recorder room when session changes
+  // Join recorder room and listen for updates
   useEffect(() => {
     if (socket && sessionId) {
       socket.emit('recorder:join', sessionId);
@@ -85,16 +93,10 @@ const TestRecorderModal = ({ suiteId, appUrl, onClose, onSaved }: TestRecorderMo
         setActions((prev) => [...prev, action]);
       });
 
-      socket.on('action:deleted', ({ actionId }: { actionId: string }) => {
-        setActions((prev) => prev.filter((a) => a.id !== actionId));
-      });
-
-      socket.on('recording:paused', () => {
-        setStatus('paused');
-      });
-
-      socket.on('recording:resumed', () => {
-        setStatus('recording');
+      socket.on('action:executed', ({ screenshot: newScreenshot }: { screenshot: string }) => {
+        if (newScreenshot) {
+          setScreenshot(newScreenshot);
+        }
       });
 
       socket.on('recording:completed', ({ actions, code }: { actions: RecordedAction[]; code: string }) => {
@@ -106,16 +108,14 @@ const TestRecorderModal = ({ suiteId, appUrl, onClose, onSaved }: TestRecorderMo
       return () => {
         socket.emit('recorder:leave', sessionId);
         socket.off('action:recorded');
-        socket.off('action:deleted');
-        socket.off('recording:paused');
-        socket.off('recording:resumed');
+        socket.off('action:executed');
         socket.off('recording:completed');
       };
     }
     return undefined;
   }, [socket, sessionId]);
 
-  // Start recording
+  // Start recording (headless)
   const handleStart = async () => {
     if (!targetUrl) {
       setError('Please enter a target URL');
@@ -129,6 +129,7 @@ const TestRecorderModal = ({ suiteId, appUrl, onClose, onSaved }: TestRecorderMo
       const response = await api.post('/api/recorder/start', {
         targetUrl,
         browserType: 'chromium',
+        headless: true,
       });
 
       if (response.data.success) {
@@ -136,11 +137,70 @@ const TestRecorderModal = ({ suiteId, appUrl, onClose, onSaved }: TestRecorderMo
         setStatus('recording');
         setActions([]);
         setGeneratedCode('');
+        
+        // Set initial screenshot if provided
+        if (response.data.session.screenshotBase64) {
+          setScreenshot(response.data.session.screenshotBase64);
+        } else {
+          // Fetch screenshot
+          await refreshScreenshot(response.data.session.id);
+        }
       }
     } catch (err: any) {
       setError(err.response?.data?.error || 'Failed to start recording');
     } finally {
       setLoading(false);
+    }
+  };
+
+  // Refresh screenshot
+  const refreshScreenshot = async (sid?: string) => {
+    const id = sid || sessionId;
+    if (!id) return;
+    
+    try {
+      const response = await api.get(`/api/recorder/${id}/page-screenshot`);
+      if (response.data.success && response.data.screenshot) {
+        setScreenshot(response.data.screenshot);
+      }
+    } catch (err) {
+      console.error('Failed to get screenshot:', err);
+    }
+  };
+
+  // Execute action
+  const handleExecuteAction = async () => {
+    if (!sessionId) return;
+    if (!actionSelector && actionType !== 'navigate') {
+      setError('Please enter a selector');
+      return;
+    }
+
+    try {
+      setExecuting(true);
+      setError(null);
+
+      const response = await api.post(`/api/recorder/${sessionId}/execute`, {
+        type: actionType,
+        selector: actionSelector,
+        value: actionValue,
+        url: actionType === 'navigate' ? actionValue : undefined,
+      });
+
+      if (response.data.success) {
+        if (response.data.screenshot) {
+          setScreenshot(response.data.screenshot);
+        }
+        // Clear inputs after successful action
+        setActionSelector('');
+        setActionValue('');
+      } else {
+        setError(response.data.error || 'Action failed');
+      }
+    } catch (err: any) {
+      setError(err.response?.data?.error || 'Failed to execute action');
+    } finally {
+      setExecuting(false);
     }
   };
 
@@ -161,28 +221,6 @@ const TestRecorderModal = ({ suiteId, appUrl, onClose, onSaved }: TestRecorderMo
       setError(err.response?.data?.error || 'Failed to stop recording');
     } finally {
       setLoading(false);
-    }
-  };
-
-  // Pause recording
-  const handlePause = async () => {
-    if (!sessionId) return;
-    try {
-      await api.post(`/api/recorder/${sessionId}/pause`);
-      setStatus('paused');
-    } catch (err: any) {
-      setError(err.response?.data?.error || 'Failed to pause');
-    }
-  };
-
-  // Resume recording
-  const handleResume = async () => {
-    if (!sessionId) return;
-    try {
-      await api.post(`/api/recorder/${sessionId}/resume`);
-      setStatus('recording');
-    } catch (err: any) {
-      setError(err.response?.data?.error || 'Failed to resume');
     }
   };
 
@@ -221,25 +259,28 @@ const TestRecorderModal = ({ suiteId, appUrl, onClose, onSaved }: TestRecorderMo
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white rounded-lg shadow-xl max-w-4xl w-full mx-4 max-h-[90vh] overflow-hidden flex flex-col">
+      <div className="bg-white rounded-lg shadow-xl max-w-6xl w-full mx-4 max-h-[95vh] overflow-hidden flex flex-col">
         {/* Header */}
         <div className="p-4 border-b flex justify-between items-center bg-gray-50">
           <div className="flex items-center gap-3">
             <span className="text-2xl">🎬</span>
             <div>
               <h2 className="text-xl font-bold text-gray-900">Test Recorder</h2>
-              <p className="text-sm text-gray-500">Record browser interactions</p>
+              <p className="text-sm text-gray-500">Headless recording mode</p>
             </div>
           </div>
           <div className="flex items-center gap-2">
-            {/* Status indicator */}
             <div className="flex items-center gap-2 mr-4">
               <div className={`w-3 h-3 rounded-full ${
                 status === 'recording' ? 'bg-red-500 animate-pulse' :
-                status === 'paused' ? 'bg-yellow-500' :
                 status === 'completed' ? 'bg-green-500' : 'bg-gray-400'
               }`} />
               <span className="text-sm font-medium capitalize">{status}</span>
+              {actions.length > 0 && (
+                <span className="text-xs bg-gray-200 px-2 py-0.5 rounded-full">
+                  {actions.length} actions
+                </span>
+              )}
             </div>
             <button onClick={onClose} className="text-gray-400 hover:text-gray-600">
               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -258,77 +299,140 @@ const TestRecorderModal = ({ suiteId, appUrl, onClose, onSaved }: TestRecorderMo
         )}
 
         {/* Content */}
-        <div className="flex-1 overflow-y-auto p-4">
-          {/* URL Input - only when idle */}
-          {status === 'idle' && (
-            <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700 mb-1">Target URL</label>
-              <div className="flex gap-2">
-                <input
-                  type="url"
-                  value={targetUrl}
-                  onChange={(e) => setTargetUrl(e.target.value)}
-                  placeholder="https://example.com"
-                  className="flex-1 px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+        <div className="flex-1 overflow-hidden flex">
+          {/* Left panel - Screenshot preview */}
+          <div className="flex-1 p-4 border-r overflow-auto bg-gray-100">
+            {status === 'idle' ? (
+              <div className="h-full flex flex-col items-center justify-center">
+                <div className="text-6xl mb-4">🌐</div>
+                <h3 className="text-lg font-semibold mb-4">Enter URL to start recording</h3>
+                <div className="w-full max-w-md space-y-3">
+                  <input
+                    type="url"
+                    value={targetUrl}
+                    onChange={(e) => setTargetUrl(e.target.value)}
+                    placeholder="https://example.com"
+                    className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 text-lg"
+                  />
+                  <button
+                    onClick={handleStart}
+                    disabled={loading || !targetUrl}
+                    className="w-full px-4 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:opacity-50 flex items-center justify-center gap-2 text-lg font-medium"
+                  >
+                    <span className="w-4 h-4 bg-white rounded-full" />
+                    {loading ? 'Starting...' : 'Start Recording'}
+                  </button>
+                </div>
+              </div>
+            ) : screenshot ? (
+              <div className="relative">
+                <img
+                  ref={screenshotRef}
+                  src={`data:image/jpeg;base64,${screenshot}`}
+                  alt="Page screenshot"
+                  className="w-full border rounded-lg shadow-lg"
                 />
                 <button
-                  onClick={handleStart}
-                  disabled={loading || !targetUrl}
-                  className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:opacity-50 flex items-center gap-2"
+                  onClick={() => refreshScreenshot()}
+                  className="absolute top-2 right-2 px-3 py-1 bg-white/90 rounded-lg text-sm hover:bg-white shadow"
                 >
-                  <span className="w-3 h-3 bg-white rounded-full" />
-                  {loading ? 'Starting...' : 'Start Recording'}
+                  🔄 Refresh
                 </button>
               </div>
-              <p className="text-xs text-gray-500 mt-2">
-                A browser window will open. Interact with the page to record actions.
-              </p>
-            </div>
-          )}
+            ) : (
+              <div className="h-full flex items-center justify-center text-gray-500">
+                Loading page preview...
+              </div>
+            )}
+          </div>
 
-          {/* Recording controls */}
-          {(status === 'recording' || status === 'paused') && (
-            <div className="flex gap-2 mb-4">
-              {status === 'recording' ? (
-                <button onClick={handlePause} className="px-4 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600">
-                  ⏸ Pause
-                </button>
-              ) : (
-                <button onClick={handleResume} className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700">
-                  ▶ Resume
-                </button>
-              )}
-              <button onClick={handleStop} disabled={loading} className="px-4 py-2 bg-gray-800 text-white rounded-lg hover:bg-gray-900">
-                {loading ? 'Stopping...' : '⏹ Stop Recording'}
-              </button>
-            </div>
-          )}
+          {/* Right panel - Actions */}
+          <div className="w-96 flex flex-col overflow-hidden">
+            {/* Action input (when recording) */}
+            {status === 'recording' && (
+              <div className="p-4 border-b bg-blue-50">
+                <h3 className="font-semibold text-gray-900 mb-3">Add Action</h3>
+                <div className="space-y-2">
+                  <select
+                    value={actionType}
+                    onChange={(e) => setActionType(e.target.value)}
+                    className="w-full px-3 py-2 border rounded-lg"
+                  >
+                    <option value="click">👆 Click</option>
+                    <option value="fill">⌨️ Fill/Type</option>
+                    <option value="press">⏎ Press Key</option>
+                    <option value="select">📋 Select Option</option>
+                    <option value="navigate">🔗 Navigate</option>
+                  </select>
+                  
+                  {actionType !== 'navigate' && (
+                    <input
+                      type="text"
+                      value={actionSelector}
+                      onChange={(e) => setActionSelector(e.target.value)}
+                      placeholder="CSS Selector (e.g., #login-btn, .submit)"
+                      className="w-full px-3 py-2 border rounded-lg font-mono text-sm"
+                    />
+                  )}
+                  
+                  {(actionType === 'fill' || actionType === 'press' || actionType === 'select' || actionType === 'navigate') && (
+                    <input
+                      type="text"
+                      value={actionValue}
+                      onChange={(e) => setActionValue(e.target.value)}
+                      placeholder={
+                        actionType === 'navigate' ? 'URL' :
+                        actionType === 'press' ? 'Key (Enter, Tab, etc.)' :
+                        actionType === 'select' ? 'Option value' :
+                        'Text to type'
+                      }
+                      className="w-full px-3 py-2 border rounded-lg"
+                    />
+                  )}
+                  
+                  <button
+                    onClick={handleExecuteAction}
+                    disabled={executing}
+                    className="w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
+                  >
+                    {executing ? 'Executing...' : '▶ Execute Action'}
+                  </button>
+                </div>
+                
+                <div className="mt-3 pt-3 border-t">
+                  <button
+                    onClick={handleStop}
+                    disabled={loading}
+                    className="w-full px-4 py-2 bg-gray-800 text-white rounded-lg hover:bg-gray-900"
+                  >
+                    {loading ? 'Stopping...' : '⏹ Stop Recording'}
+                  </button>
+                </div>
+              </div>
+            )}
 
-          {/* Actions list */}
-          <div className="mb-4">
-            <h3 className="font-semibold text-gray-900 mb-2">
-              Recorded Actions ({actions.length})
-            </h3>
-            <div className="border rounded-lg max-h-60 overflow-y-auto">
+            {/* Actions list */}
+            <div className="flex-1 overflow-y-auto p-4">
+              <h3 className="font-semibold text-gray-900 mb-2">
+                Recorded Actions ({actions.length})
+              </h3>
               {actions.length === 0 ? (
-                <div className="p-8 text-center text-gray-500">
-                  {status === 'idle' ? 'Start recording to capture actions' : 'Interact with the page to record actions'}
+                <div className="text-center py-8 text-gray-500 text-sm">
+                  {status === 'idle' ? 'Start recording to capture actions' : 'Add actions using the form above'}
                 </div>
               ) : (
-                <div className="divide-y">
+                <div className="space-y-1">
                   {actions.map((action, index) => (
-                    <div key={action.id} className="flex items-center p-2 hover:bg-gray-50">
-                      <span className="w-8 text-center text-gray-400 text-sm">{index + 1}</span>
-                      <span className="text-xl mr-2">{actionIcons[action.type] || '❓'}</span>
-                      <span className="flex-1 text-sm">{action.description}</span>
+                    <div key={action.id} className="flex items-center p-2 bg-gray-50 rounded hover:bg-gray-100 text-sm">
+                      <span className="w-6 text-center text-gray-400">{index + 1}</span>
+                      <span className="mr-2">{actionIcons[action.type] || '❓'}</span>
+                      <span className="flex-1 truncate">{action.description}</span>
                       {status !== 'completed' && (
                         <button
                           onClick={() => handleDeleteAction(action.id)}
                           className="text-red-500 hover:text-red-700 p-1"
                         >
-                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                          </svg>
+                          ✕
                         </button>
                       )}
                     </div>
@@ -336,45 +440,44 @@ const TestRecorderModal = ({ suiteId, appUrl, onClose, onSaved }: TestRecorderMo
                 </div>
               )}
             </div>
-          </div>
 
-          {/* Generated code preview */}
-          {status === 'completed' && generatedCode && (
-            <div className="mb-4">
-              <h3 className="font-semibold text-gray-900 mb-2">Generated Code</h3>
-              <div className="bg-gray-900 rounded-lg p-4 max-h-48 overflow-auto">
+            {/* Generated code (when completed) */}
+            {status === 'completed' && generatedCode && (
+              <div className="p-4 border-t bg-gray-900 max-h-48 overflow-auto">
                 <pre className="text-green-400 text-xs font-mono whitespace-pre-wrap">{generatedCode}</pre>
               </div>
-            </div>
-          )}
+            )}
 
-          {/* Save form */}
-          {status === 'completed' && (
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-              <h3 className="font-semibold text-blue-900 mb-2">Save as Test File</h3>
-              <div className="flex gap-2">
-                <input
-                  type="text"
-                  value={fileName}
-                  onChange={(e) => setFileName(e.target.value)}
-                  placeholder="my-test"
-                  className="flex-1 px-3 py-2 border rounded-lg"
-                />
-                <span className="py-2 text-gray-500">.spec.ts</span>
-                <button
-                  onClick={handleSave}
-                  disabled={saving || !fileName}
-                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
-                >
-                  {saving ? 'Saving...' : 'Save Test'}
-                </button>
+            {/* Save form (when completed) */}
+            {status === 'completed' && (
+              <div className="p-4 border-t bg-green-50">
+                <h3 className="font-semibold text-green-900 mb-2">Save Test</h3>
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    value={fileName}
+                    onChange={(e) => setFileName(e.target.value)}
+                    placeholder="test-name"
+                    className="flex-1 px-3 py-2 border rounded-lg"
+                  />
+                  <button
+                    onClick={handleSave}
+                    disabled={saving || !fileName}
+                    className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50"
+                  >
+                    {saving ? '...' : 'Save'}
+                  </button>
+                </div>
               </div>
-            </div>
-          )}
+            )}
+          </div>
         </div>
 
         {/* Footer */}
-        <div className="p-4 border-t bg-gray-50 flex justify-end">
+        <div className="p-4 border-t bg-gray-50 flex justify-between items-center">
+          <div className="text-sm text-gray-500">
+            💡 Use CSS selectors like <code className="bg-gray-200 px-1 rounded">#id</code>, <code className="bg-gray-200 px-1 rounded">.class</code>, or <code className="bg-gray-200 px-1 rounded">[data-testid="x"]</code>
+          </div>
           <button onClick={onClose} className="px-4 py-2 text-gray-700 hover:bg-gray-200 rounded-lg">
             {status === 'completed' ? 'Close' : 'Cancel'}
           </button>
