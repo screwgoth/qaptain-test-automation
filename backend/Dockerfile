@@ -22,11 +22,32 @@ WORKDIR /app/backend
 RUN npx prisma generate
 RUN npm run build
 
-# Production stage
-FROM node:20-alpine
+# Production stage - use Debian for Playwright browser support
+FROM node:20-slim
 
-# Install OpenSSL for Prisma
-RUN apk add --no-cache openssl
+# Install system dependencies for Playwright
+RUN apt-get update && apt-get install -y \
+    wget \
+    ca-certificates \
+    fonts-liberation \
+    libnss3 \
+    libnspr4 \
+    libatk-bridge2.0-0 \
+    libatk1.0-0 \
+    libcups2 \
+    libdbus-1-3 \
+    libdrm2 \
+    libgbm1 \
+    libxkbcommon0 \
+    libxcomposite1 \
+    libxdamage1 \
+    libxfixes3 \
+    libxrandr2 \
+    libpango-1.0-0 \
+    libcairo2 \
+    libasound2 \
+    libatspi2.0-0 \
+    && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 
@@ -41,6 +62,10 @@ COPY --from=builder /app/backend/prisma ./prisma
 
 # Generate Prisma client
 RUN npx prisma generate
+
+# Install Playwright browsers
+ENV PLAYWRIGHT_BROWSERS_PATH=/ms-playwright
+RUN npx playwright install --with-deps chromium firefox webkit
 
 # Copy built files
 COPY --from=builder /app/backend/dist ./dist

@@ -70,8 +70,8 @@ const TestRunDetail = () => {
 
   // Update live results when testRun changes
   useEffect(() => {
-    if (testRun?.results) {
-      setLiveResults(testRun.results);
+    if (testRun?.testResults) {
+      setLiveResults(testRun.testResults);
     }
   }, [testRun]);
 
@@ -110,8 +110,10 @@ const TestRunDetail = () => {
     );
   }
 
-  const isRunning = testRun.status === 'running' || testRun.status === 'pending';
-  const progressPercent = Math.round(testRun.progress);
+  const isRunning = testRun.status === 'RUNNING' || testRun.status === 'QUEUED';
+  const progressPercent = testRun.totalTests > 0 
+    ? Math.round(((testRun.passed || 0) + (testRun.failed || 0) + (testRun.skipped || 0)) / testRun.totalTests * 100)
+    : 0;
 
   return (
     <Layout>
@@ -141,13 +143,13 @@ const TestRunDetail = () => {
               <div className="mt-1">
                 <span
                   className={`inline-block px-3 py-1 rounded-full text-sm font-medium ${
-                    testRun.status === 'completed'
+                    testRun.status === 'COMPLETED'
                       ? 'bg-green-100 text-green-800'
-                      : testRun.status === 'running'
+                      : testRun.status === 'RUNNING'
                       ? 'bg-blue-100 text-blue-800'
-                      : testRun.status === 'failed'
+                      : testRun.status === 'FAILED'
                       ? 'bg-red-100 text-red-800'
-                      : testRun.status === 'cancelled'
+                      : testRun.status === 'CANCELLED'
                       ? 'bg-gray-100 text-gray-800'
                       : 'bg-yellow-100 text-yellow-800'
                   }`}
@@ -180,8 +182,8 @@ const TestRunDetail = () => {
             <div>
               <div className="text-sm text-gray-600">Duration</div>
               <div className="text-xl font-bold text-gray-900 mt-1">
-                {testRun.duration
-                  ? `${Math.round(testRun.duration / 1000)}s`
+                {testRun.durationMs
+                  ? `${Math.round(testRun.durationMs / 1000)}s`
                   : isRunning
                   ? 'Running...'
                   : 'N/A'}
@@ -202,21 +204,21 @@ const TestRunDetail = () => {
           <div className="card bg-green-50 border-green-200">
             <div className="text-sm text-green-600 font-medium">Passed</div>
             <div className="text-3xl font-bold text-green-900 mt-1">
-              {testRun.passedTests}
+              {testRun.passed || 0}
             </div>
           </div>
 
           <div className="card bg-red-50 border-red-200">
             <div className="text-sm text-red-600 font-medium">Failed</div>
             <div className="text-3xl font-bold text-red-900 mt-1">
-              {testRun.failedTests}
+              {testRun.failed || 0}
             </div>
           </div>
 
           <div className="card bg-gray-50 border-gray-200">
             <div className="text-sm text-gray-600 font-medium">Skipped</div>
             <div className="text-3xl font-bold text-gray-900 mt-1">
-              {testRun.skippedTests}
+              {testRun.skipped || 0}
             </div>
           </div>
         </div>
@@ -265,14 +267,14 @@ const TestRunDetail = () => {
                   {liveResults.map((result) => (
                     <tr key={result.id} className="hover:bg-gray-50">
                       <td className="px-6 py-4 text-sm text-gray-900">
-                        {result.testName}
+                        {result.testFile?.name || `Test ${result.id.slice(0, 8)}`}
                       </td>
                       <td className="px-6 py-4">
                         <span
                           className={`inline-block px-2 py-1 text-xs rounded ${
-                            result.status === 'passed'
+                            result.status === 'PASSED'
                               ? 'bg-green-100 text-green-800'
-                              : result.status === 'failed'
+                              : result.status === 'FAILED'
                               ? 'bg-red-100 text-red-800'
                               : 'bg-gray-100 text-gray-800'
                           }`}
@@ -281,16 +283,16 @@ const TestRunDetail = () => {
                         </span>
                       </td>
                       <td className="px-6 py-4 text-sm text-gray-600">
-                        {Math.round(result.duration)}ms
+                        {Math.round(result.durationMs)}ms
                       </td>
                       <td className="px-6 py-4 text-sm">
-                        {result.error && (
+                        {result.errorMessage && (
                           <details className="cursor-pointer">
                             <summary className="text-red-600 hover:underline">
                               View Error
                             </summary>
                             <div className="mt-2 p-3 bg-red-50 rounded text-xs">
-                              <div className="font-mono text-red-900">{result.error}</div>
+                              <div className="font-mono text-red-900">{result.errorMessage}</div>
                               {result.stackTrace && (
                                 <pre className="mt-2 text-red-800 overflow-x-auto">
                                   {result.stackTrace}
@@ -299,9 +301,9 @@ const TestRunDetail = () => {
                             </div>
                           </details>
                         )}
-                        {result.screenshots.length > 0 && (
+                        {result.screenshotUrl && (
                           <a
-                            href={result.screenshots[0]}
+                            href={result.screenshotUrl}
                             target="_blank"
                             rel="noopener noreferrer"
                             className="text-primary-600 hover:underline ml-2"
@@ -309,9 +311,9 @@ const TestRunDetail = () => {
                             📸 Screenshot
                           </a>
                         )}
-                        {result.videos.length > 0 && (
+                        {result.videoUrl && (
                           <a
-                            href={result.videos[0]}
+                            href={result.videoUrl}
                             target="_blank"
                             rel="noopener noreferrer"
                             className="text-primary-600 hover:underline ml-2"

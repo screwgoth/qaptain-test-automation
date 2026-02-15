@@ -31,18 +31,18 @@ const RunTestModal = ({ suite, onClose }: RunTestModalProps) => {
     queryKey: ['apps', suite.appId, 'environments'],
     queryFn: async () => {
       const response = await api.get(`/api/apps/${suite.appId}`);
-      return response.data.environments || [];
+      return response.data.app?.environments || [];
     },
   });
 
   const runMutation = useMutation({
-    mutationFn: async (data: { testSuiteId: string; config: TestRunConfig }) => {
+    mutationFn: async (data: any) => {
       const response = await api.post('/api/test-runs', data);
       return response.data;
     },
     onSuccess: (data) => {
       // Navigate to the test run page
-      navigate(`/test-runs/${data.id}`);
+      navigate(`/test-runs/${data.testRun.id}`);
       onClose();
     },
     onError: (err: any) => {
@@ -54,9 +54,19 @@ const RunTestModal = ({ suite, onClose }: RunTestModalProps) => {
     e.preventDefault();
     setError('');
 
+    // Get environment ID if selected
+    const selectedEnv = environments.find((env: any) => env.name === config.environment);
+
     runMutation.mutate({
-      testSuiteId: suite.id,
-      config,
+      appId: suite.appId,
+      suiteId: suite.id,
+      environmentId: selectedEnv?.id,
+      browser: config.browser,
+      workers: config.parallel ? 4 : 1,
+      retries: config.retries,
+      headless: config.headless,
+      screenshot: 'on-failure',
+      video: 'on-failure',
     });
   };
 

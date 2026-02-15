@@ -35,7 +35,7 @@ const Dashboard = () => {
   const recentRunsCount = recentRuns.length;
   const passRate = recentRuns.length > 0
     ? Math.round(
-        (recentRuns.filter((r) => r.status === 'completed').length / recentRuns.length) * 100
+        (recentRuns.filter((r) => r.status === 'COMPLETED').length / recentRuns.length) * 100
       )
     : 0;
 
@@ -54,63 +54,80 @@ const Dashboard = () => {
     return date.toLocaleDateString();
   };
 
+  const getStatusBadge = (status: string) => {
+    const badges = {
+      COMPLETED: 'badge-success',
+      RUNNING: 'badge-info',
+      FAILED: 'badge-error',
+      CANCELLED: 'badge-default',
+      QUEUED: 'badge-warning',
+    };
+    return badges[status as keyof typeof badges] || 'badge-default';
+  };
+
   return (
     <Layout>
-      <div className="space-y-6">
+      <div className="space-y-8 animate-fade-in">
         {/* Header */}
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Dashboard</h1>
-          <p className="text-gray-600 mt-1">
+          <h1 className="text-4xl font-display font-bold text-slate-100">
+            Dashboard
+          </h1>
+          <p className="text-slate-400 mt-2 text-lg">
             Welcome to Qaptain - Your Playwright test automation platform
           </p>
         </div>
 
-        {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <div className="card bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200">
-            <div className="flex items-center justify-between">
+        {/* Stats Cards - Glassmorphism */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="stat-card from-primary-500/10 to-primary-600/5">
+            <div className="flex items-start justify-between">
               <div>
-                <div className="text-sm text-blue-600 font-medium">Total Apps</div>
-                <div className="text-3xl font-bold text-blue-900 mt-1">{totalApps}</div>
+                <div className="text-sm text-slate-400 font-medium mb-1">Total Apps</div>
+                <div className="text-4xl font-display font-bold text-slate-100">{totalApps}</div>
+                <div className="text-xs text-primary-400 mt-2 font-medium">Active applications</div>
               </div>
-              <div className="text-4xl">📱</div>
+              <div className="text-5xl opacity-20">📱</div>
             </div>
           </div>
 
-          <div className="card bg-gradient-to-br from-purple-50 to-purple-100 border-purple-200">
-            <div className="flex items-center justify-between">
+          <div className="stat-card from-purple-500/10 to-purple-600/5">
+            <div className="flex items-start justify-between">
               <div>
-                <div className="text-sm text-purple-600 font-medium">Test Suites</div>
-                <div className="text-3xl font-bold text-purple-900 mt-1">{totalSuites}</div>
+                <div className="text-sm text-slate-400 font-medium mb-1">Test Suites</div>
+                <div className="text-4xl font-display font-bold text-slate-100">{totalSuites}</div>
+                <div className="text-xs text-purple-400 mt-2 font-medium">Configured suites</div>
               </div>
-              <div className="text-4xl">🧪</div>
+              <div className="text-5xl opacity-20">🧪</div>
             </div>
           </div>
 
-          <div className="card bg-gradient-to-br from-green-50 to-green-100 border-green-200">
-            <div className="flex items-center justify-between">
+          <div className="stat-card from-emerald-500/10 to-emerald-600/5">
+            <div className="flex items-start justify-between">
               <div>
-                <div className="text-sm text-green-600 font-medium">Recent Runs</div>
-                <div className="text-3xl font-bold text-green-900 mt-1">{recentRunsCount}</div>
+                <div className="text-sm text-slate-400 font-medium mb-1">Recent Runs</div>
+                <div className="text-4xl font-display font-bold text-slate-100">{recentRunsCount}</div>
+                <div className="text-xs text-emerald-400 mt-2 font-medium">Last 10 executions</div>
               </div>
-              <div className="text-4xl">▶️</div>
+              <div className="text-5xl opacity-20">▶️</div>
             </div>
           </div>
 
-          <div className="card bg-gradient-to-br from-orange-50 to-orange-100 border-orange-200">
-            <div className="flex items-center justify-between">
+          <div className="stat-card from-amber-500/10 to-amber-600/5">
+            <div className="flex items-start justify-between">
               <div>
-                <div className="text-sm text-orange-600 font-medium">Pass Rate</div>
-                <div className="text-3xl font-bold text-orange-900 mt-1">{passRate}%</div>
+                <div className="text-sm text-slate-400 font-medium mb-1">Pass Rate</div>
+                <div className="text-4xl font-display font-bold text-slate-100">{passRate}%</div>
+                <div className="text-xs text-amber-400 mt-2 font-medium">Success percentage</div>
               </div>
-              <div className="text-4xl">✅</div>
+              <div className="text-5xl opacity-20">✅</div>
             </div>
           </div>
         </div>
 
         {/* Quick Actions */}
         <div className="card">
-          <h2 className="text-xl font-semibold text-gray-900 mb-4">Quick Actions</h2>
+          <h2 className="text-2xl font-display font-semibold text-slate-100 mb-6">Quick Actions</h2>
           <div className="flex flex-wrap gap-3">
             <Link to="/apps" className="btn btn-primary">
               📱 View All Apps
@@ -118,41 +135,50 @@ const Dashboard = () => {
             <Link to="/apps" className="btn btn-secondary">
               + Create New App
             </Link>
+            <Link to="/recorder" className="btn btn-ghost">
+              🎬 Open Recorder
+            </Link>
           </div>
         </div>
 
         {/* Recent Apps */}
         <div className="card">
-          <div className="flex justify-between items-center mb-4">
-            <h2 className="text-xl font-semibold text-gray-900">Your Apps</h2>
-            <Link to="/apps" className="text-primary-600 hover:underline text-sm">
+          <div className="flex justify-between items-center mb-6">
+            <h2 className="text-2xl font-display font-semibold text-slate-100">Your Apps</h2>
+            <Link to="/apps" className="link text-sm font-medium">
               View All →
             </Link>
           </div>
 
           {appsLoading ? (
-            <div className="text-center py-8">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600 mx-auto"></div>
+            <div className="flex justify-center py-12">
+              <div className="spinner w-10 h-10"></div>
             </div>
           ) : apps.length === 0 ? (
-            <div className="text-center py-8">
-              <span className="text-6xl">📱</span>
-              <p className="mt-2 text-gray-600">No apps yet. Create your first app to get started!</p>
-              <Link to="/apps" className="mt-4 btn btn-primary inline-block">
+            <div className="text-center py-12">
+              <span className="text-7xl opacity-30">📱</span>
+              <p className="mt-4 text-slate-400 text-lg">No apps yet. Create your first app to get started!</p>
+              <Link to="/apps" className="mt-6 btn btn-primary inline-flex">
                 + Create App
               </Link>
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {apps.slice(0, 6).map((app) => (
                 <Link
                   key={app.id}
                   to={`/apps/${app.id}`}
-                  className="p-4 border border-gray-200 rounded-lg hover:border-primary-600 hover:shadow-md transition-all"
+                  className="group p-5 bg-slate-800/40 border border-slate-700/50 rounded-xl 
+                           hover:border-primary-500/50 hover:bg-slate-800/60 
+                           transition-all duration-200 hover:shadow-glass"
                 >
-                  <h3 className="font-semibold text-gray-900">{app.name}</h3>
-                  <div className="mt-2 text-sm text-gray-600">
-                    {app.testSuites?.length || 0} test suites
+                  <h3 className="font-semibold text-slate-100 group-hover:text-primary-400 transition-colors">
+                    {app.name}
+                  </h3>
+                  <div className="mt-3 flex items-center gap-2 text-sm text-slate-400">
+                    <span className="flex items-center gap-1">
+                      🧪 {app.testSuites?.length || 0} suites
+                    </span>
                   </div>
                 </Link>
               ))}
@@ -162,78 +188,50 @@ const Dashboard = () => {
 
         {/* Recent Test Runs */}
         <div className="card">
-          <h2 className="text-xl font-semibold text-gray-900 mb-4">Recent Test Runs</h2>
+          <h2 className="text-2xl font-display font-semibold text-slate-100 mb-6">Recent Test Runs</h2>
 
           {runsLoading ? (
-            <div className="text-center py-8">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600 mx-auto"></div>
+            <div className="flex justify-center py-12">
+              <div className="spinner w-10 h-10"></div>
             </div>
           ) : recentRuns.length === 0 ? (
-            <div className="text-center py-8">
-              <span className="text-6xl">🧪</span>
-              <p className="mt-2 text-gray-600">No test runs yet. Run your first test to see results here!</p>
+            <div className="text-center py-12">
+              <span className="text-7xl opacity-30">🧪</span>
+              <p className="mt-4 text-slate-400 text-lg">No test runs yet. Run your first test to see results here!</p>
             </div>
           ) : (
-            <div className="overflow-x-auto">
-              <table className="min-w-full divide-y divide-gray-200">
-                <thead className="bg-gray-50">
+            <div className="table-container">
+              <table className="table">
+                <thead>
                   <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                      Status
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                      Tests
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                      Passed
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                      Failed
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                      Time
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                      Actions
-                    </th>
+                    <th>Status</th>
+                    <th>Tests</th>
+                    <th>Passed</th>
+                    <th>Failed</th>
+                    <th>Time</th>
+                    <th>Actions</th>
                   </tr>
                 </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
+                <tbody>
                   {recentRuns.map((run) => (
-                    <tr key={run.id} className="hover:bg-gray-50">
-                      <td className="px-6 py-4">
-                        <span
-                          className={`inline-block px-2 py-1 text-xs rounded ${
-                            run.status === 'completed'
-                              ? 'bg-green-100 text-green-800'
-                              : run.status === 'running'
-                              ? 'bg-blue-100 text-blue-800'
-                              : run.status === 'failed'
-                              ? 'bg-red-100 text-red-800'
-                              : run.status === 'cancelled'
-                              ? 'bg-gray-100 text-gray-800'
-                              : 'bg-yellow-100 text-yellow-800'
-                          }`}
-                        >
+                    <tr key={run.id}>
+                      <td>
+                        <span className={`badge ${getStatusBadge(run.status)} flex items-center gap-2 w-fit`}>
+                          <span className={`status-dot status-${run.status.toLowerCase()}`}></span>
                           {run.status}
                         </span>
                       </td>
-                      <td className="px-6 py-4 text-sm text-gray-900">{run.totalTests}</td>
-                      <td className="px-6 py-4 text-sm text-green-600 font-medium">
-                        {run.passedTests}
+                      <td className="font-mono font-semibold">{run.totalTests}</td>
+                      <td>
+                        <span className="text-emerald-400 font-semibold font-mono">{run.passed || 0}</span>
                       </td>
-                      <td className="px-6 py-4 text-sm text-red-600 font-medium">
-                        {run.failedTests}
+                      <td>
+                        <span className="text-red-400 font-semibold font-mono">{run.failed || 0}</span>
                       </td>
-                      <td className="px-6 py-4 text-sm text-gray-600">
-                        {formatDate(run.createdAt)}
-                      </td>
-                      <td className="px-6 py-4">
-                        <Link
-                          to={`/test-runs/${run.id}`}
-                          className="text-primary-600 hover:underline text-sm"
-                        >
-                          View Details
+                      <td className="text-slate-400">{formatDate(run.createdAt)}</td>
+                      <td>
+                        <Link to={`/test-runs/${run.id}`} className="link text-sm">
+                          View Details →
                         </Link>
                       </td>
                     </tr>

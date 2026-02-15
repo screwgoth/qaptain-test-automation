@@ -18,6 +18,8 @@ import {
   saveAsTestFile,
   getRecordingHistory,
   regenerateCode,
+  getPageScreenshot,
+  executeAction,
 } from '../controllers/recorder.controller';
 
 const router = Router();
@@ -101,5 +103,18 @@ router.post('/:sessionId/save', saveAsTestFile);
  * @desc    Regenerate code from actions
  */
 router.post('/:sessionId/regenerate', regenerateCode);
+
+/**
+ * @route   GET /api/recorder/:sessionId/page-screenshot
+ * @desc    Get current page screenshot (for headless mode)
+ */
+router.get('/:sessionId/page-screenshot', getPageScreenshot);
+
+/**
+ * @route   POST /api/recorder/:sessionId/execute
+ * @desc    Execute an action on the page (for headless mode)
+ * @body    { type, selector?, value?, url? }
+ */
+router.post('/:sessionId/execute', executeAction);
 
 export default router;

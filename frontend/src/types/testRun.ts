@@ -4,34 +4,48 @@
 
 export interface TestRun {
   id: string;
-  status: 'pending' | 'running' | 'completed' | 'failed' | 'cancelled';
-  progress: number;
+  status: 'QUEUED' | 'RUNNING' | 'COMPLETED' | 'FAILED' | 'CANCELLED';
   totalTests: number;
-  passedTests: number;
-  failedTests: number;
-  skippedTests: number;
+  passed: number;
+  failed: number;
+  skipped: number;
   startedAt: string | null;
   completedAt: string | null;
-  duration: number | null;
-  environment: string | null;
+  durationMs: number | null;
   browser: string;
-  testSuiteId: string;
+  workers: number;
+  headless: boolean;
+  screenshot: string;
+  video: string;
+  retries: number;
+  trigger: string;
+  appId: string;
+  suiteId: string | null;
+  environmentId: string | null;
   userId: string;
-  results: TestResult[];
   createdAt: string;
-  updatedAt: string;
+  app?: any;
+  suite?: any;
+  environment?: any;
+  testResults?: TestResult[];
 }
 
 export interface TestResult {
   id: string;
-  testName: string;
-  status: 'passed' | 'failed' | 'skipped';
-  duration: number;
-  error: string | null;
+  status: 'PASSED' | 'FAILED' | 'SKIPPED';
+  durationMs: number;
+  errorMessage: string | null;
   stackTrace: string | null;
-  screenshots: string[];
-  videos: string[];
-  testRunId: string;
+  screenshotUrl: string | null;
+  videoUrl: string | null;
+  retryCount: number;
+  runId: string;
+  testFileId: string;
+  testFile?: {
+    id: string;
+    name: string;
+    path: string;
+  };
   createdAt: string;
 }
 

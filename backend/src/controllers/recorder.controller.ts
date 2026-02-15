@@ -48,11 +48,11 @@ export const startRecording = async (req: Request, res: Response): Promise<void>
       },
     });
 
-    // Start Playwright session
-    const { wsEndpoint } = await recorderService.startSession(sessionId, targetUrl, {
+    // Start Playwright session (headless by default for server environments)
+    const { wsEndpoint, screenshotBase64 } = await recorderService.startSession(sessionId, targetUrl, {
       browserType,
       viewport,
-      headless: false, // Show browser for recording
+      headless: true,
     });
 
     // Setup event listeners for this session
@@ -83,6 +83,7 @@ export const startRecording = async (req: Request, res: Response): Promise<void>
         browserType: browserType || 'chromium',
         status: 'recording',
         wsEndpoint,
+        screenshotBase64,
       },
     });
   } catch (error: any) {
@@ -412,5 +413,63 @@ export const regenerateCode = async (req: Request, res: Response): Promise<void>
     res.json({ success: true, code });
   } catch (error: any) {
     res.status(500).json({ error: error.message || 'Failed to regenerate code' });
+  }
+};
+
+/**
+ * Get current page screenshot (for headless mode)
+ */
+export const getPageScreenshot = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { sessionId } = req.params;
+
+    const screenshotBase64 = await recorderService.getScreenshot(sessionId);
+    if (!screenshotBase64) {
+      res.status(404).json({ error: 'Session not found or screenshot failed' });
+      return;
+    }
+
+    res.json({ success: true, screenshot: screenshotBase64 });
+  } catch (error: any) {
+    res.status(500).json({ error: error.message || 'Failed to get screenshot' });
+  }
+};
+
+/**
+ * Execute an action on the page (for headless mode)
+ */
+export const executeAction = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { sessionId } = req.params;
+    const { type, selector, value, url } = req.body;
+
+    if (!type) {
+      res.status(400).json({ error: 'Action type is required' });
+      return;
+    }
+
+    const result = await recorderService.executeAction(sessionId, {
+      type,
+      selector,
+      value,
+      url,
+    });
+
+    if (!result.success) {
+      res.status(400).json({ error: result.error });
+      return;
+    }
+
+    // Emit action to WebSocket clients
+    io.to(`recorder:${sessionId}`).emit('action:executed', {
+      screenshot: result.screenshotBase64,
+    });
+
+    res.json({
+      success: true,
+      screenshot: result.screenshotBase64,
+    });
+  } catch (error: any) {
+    res.status(500).json({ error: error.message || 'Failed to execute action' });
   }
 };

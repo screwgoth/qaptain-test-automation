@@ -41,11 +41,11 @@ class RecorderService extends EventEmitter {
       viewport?: { width: number; height: number };
       headless?: boolean;
     } = {}
-  ): Promise<{ wsEndpoint: string }> {
+  ): Promise<{ wsEndpoint: string; screenshotBase64?: string }> {
     const {
       browserType = 'chromium',
       viewport = { width: 1280, height: 720 },
-      headless = false,
+      headless = true, // Default to headless for server environments
     } = options;
 
     // Launch browser
@@ -92,7 +92,121 @@ class RecorderService extends EventEmitter {
     session.status = 'recording';
     this.emit('sessionStarted', { sessionId, targetUrl });
 
-    return { wsEndpoint: '' };
+    // Capture initial screenshot for headless mode
+    let screenshotBase64: string | undefined;
+    if (headless) {
+      const buffer = await page.screenshot({ type: 'jpeg', quality: 80 });
+      screenshotBase64 = buffer.toString('base64');
+    }
+
+    return { wsEndpoint: '', screenshotBase64 };
+  }
+
+  /**
+   * Get current page screenshot
+   */
+  async getScreenshot(sessionId: string): Promise<string | null> {
+    const session = this.sessions.get(sessionId);
+    if (!session) return null;
+
+    try {
+      const buffer = await session.page.screenshot({ type: 'jpeg', quality: 80 });
+      return buffer.toString('base64');
+    } catch (error) {
+      console.error('Failed to capture screenshot:', error);
+      return null;
+    }
+  }
+
+  /**
+   * Execute an action on the page (for headless mode)
+   */
+  async executeAction(
+    sessionId: string,
+    action: { type: string; selector?: string; value?: string; url?: string }
+  ): Promise<{ success: boolean; screenshotBase64?: string; error?: string }> {
+    const session = this.sessions.get(sessionId);
+    if (!session) {
+      return { success: false, error: 'Session not found' };
+    }
+
+    try {
+      const { page } = session;
+
+      switch (action.type) {
+        case 'click':
+          if (action.selector) {
+            await page.locator(action.selector).click();
+            this.addAction(sessionId, {
+              type: 'click',
+              selector: action.selector,
+              description: `Click on ${action.selector}`,
+            });
+          }
+          break;
+
+        case 'fill':
+          if (action.selector && action.value !== undefined) {
+            await page.locator(action.selector).fill(action.value);
+            this.addAction(sessionId, {
+              type: 'fill',
+              selector: action.selector,
+              value: action.value,
+              description: `Fill ${action.selector} with "${action.value}"`,
+            });
+          }
+          break;
+
+        case 'navigate':
+          if (action.url) {
+            await page.goto(action.url, { waitUntil: 'domcontentloaded' });
+            this.addAction(sessionId, {
+              type: 'navigate',
+              url: action.url,
+              description: `Navigate to ${action.url}`,
+            });
+          }
+          break;
+
+        case 'press':
+          if (action.selector && action.value) {
+            await page.locator(action.selector).press(action.value);
+            this.addAction(sessionId, {
+              type: 'press',
+              selector: action.selector,
+              key: action.value,
+              description: `Press ${action.value}`,
+            });
+          }
+          break;
+
+        case 'select':
+          if (action.selector && action.value) {
+            await page.locator(action.selector).selectOption(action.value);
+            this.addAction(sessionId, {
+              type: 'select',
+              selector: action.selector,
+              value: action.value,
+              description: `Select ${action.value}`,
+            });
+          }
+          break;
+
+        default:
+          return { success: false, error: `Unknown action type: ${action.type}` };
+      }
+
+      // Wait a bit for page to update
+      await page.waitForTimeout(500);
+
+      // Capture screenshot after action
+      const buffer = await page.screenshot({ type: 'jpeg', quality: 80 });
+      const screenshotBase64 = buffer.toString('base64');
+
+      return { success: true, screenshotBase64 };
+    } catch (error: any) {
+      return { success: false, error: error.message };
+    }
   }
 
   /**

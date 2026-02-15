@@ -90,6 +90,8 @@ volumes:
     driver: local
   redis_data:
     driver: local
+  backend-uploads:
+    driver: local
 
 networks:
   qaptain-network:

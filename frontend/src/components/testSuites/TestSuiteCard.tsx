@@ -224,7 +224,12 @@ const TestSuiteCard = ({ suite, appId }: TestSuiteCardProps) => {
 
       {isRecorderOpen && (
         <TestRecorderModal
+          suiteId={suite.id}
           onClose={() => setIsRecorderOpen(false)}
+          onSaved={() => {
+            setIsRecorderOpen(false);
+            queryClient.invalidateQueries({ queryKey: ['apps', appId] });
+          }}
         />
       )}
     </>
