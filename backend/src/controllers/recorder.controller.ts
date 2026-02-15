@@ -49,10 +49,12 @@ export const startRecording = async (req: Request, res: Response): Promise<void>
     });
 
     // Start Playwright session
+    // Note: In Docker/headless environment, recorder runs in headless mode
+    // Users can connect to the browser via CDP/Playwright Inspector
     const { wsEndpoint } = await recorderService.startSession(sessionId, targetUrl, {
       browserType,
       viewport,
-      headless: false, // Show browser for recording
+      headless: true, // Must be headless in Docker (no X11 display)
     });
 
     // Setup event listeners for this session
