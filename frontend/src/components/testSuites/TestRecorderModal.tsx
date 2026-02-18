@@ -49,7 +49,11 @@ const TestRecorderModal = ({ suiteId, appUrl, onClose, onSaved }: TestRecorderMo
   const [socket, setSocket] = useState<Socket | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
-  const [fileName, setFileName] = useState('');
+  // Generate default filename with timestamp to avoid collisions
+  const [fileName, setFileName] = useState(() => {
+    const timestamp = new Date().toISOString().slice(0, 19).replace(/[-:T]/g, '');
+    return `recorded-test-${timestamp}`;
+  });
   const [saving, setSaving] = useState(false);
   
   // Headless mode state
@@ -233,11 +237,19 @@ const TestRecorderModal = ({ suiteId, appUrl, onClose, onSaved }: TestRecorderMo
 
     try {
       setSaving(true);
+      setError(null); // Clear any previous errors
+      
       const response = await api.post(`/api/recorder/${sessionId}/save`, {
         suiteId,
         fileName,
       });
+      
       console.log('Test file saved successfully:', response.data);
+      
+      // Show message if file was auto-renamed
+      if (response.data.message) {
+        console.log('Server message:', response.data.message);
+      }
       
       // Call onSaved callback BEFORE closing (so parent can invalidate queries)
       if (onSaved) {
@@ -245,12 +257,19 @@ const TestRecorderModal = ({ suiteId, appUrl, onClose, onSaved }: TestRecorderMo
       }
       
       // Small delay to ensure query invalidation completes
-      await new Promise(resolve => setTimeout(resolve, 100));
+      await new Promise(resolve => setTimeout(resolve, 200));
       
       onClose();
     } catch (err: any) {
       console.error('Failed to save test file:', err);
-      setError(err.response?.data?.error || 'Failed to save test');
+      const errorMsg = err.response?.data?.error || err.message || 'Failed to save test';
+      setError(errorMsg);
+      
+      // If it's a duplicate name error, suggest appending timestamp
+      if (errorMsg.includes('already exists')) {
+        const timestamp = new Date().getTime();
+        setFileName(`${fileName}-${timestamp}`);
+      }
     } finally {
       setSaving(false);
     }

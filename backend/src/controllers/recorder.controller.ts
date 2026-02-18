@@ -322,11 +322,34 @@ export const saveAsTestFile = async (req: Request, res: Response): Promise<void>
       return;
     }
 
-    // Create test file
+    // Generate unique filename
+    let baseName = fileName.replace(/\.spec\.ts$/, '');
+    let finalPath = `${baseName}.spec.ts`;
+    let counter = 1;
+
+    // Check if file exists and generate unique name
+    while (true) {
+      const existing = await prisma.testFile.findFirst({
+        where: {
+          suiteId,
+          path: finalPath,
+        },
+      });
+
+      if (!existing) {
+        break; // Unique name found
+      }
+
+      // Append counter to make it unique
+      finalPath = `${baseName}-${counter}.spec.ts`;
+      counter++;
+    }
+
+    // Create test file with unique path
     const testFile = await prisma.testFile.create({
       data: {
-        name: fileName.endsWith('.spec.ts') ? fileName : `${fileName}.spec.ts`,
-        path: fileName.endsWith('.spec.ts') ? fileName : `${fileName}.spec.ts`,
+        name: finalPath,
+        path: finalPath,
         code: dbSession.generatedCode,
         description: description || `Recorded test from ${dbSession.targetUrl}`,
         suiteId,
@@ -341,9 +364,19 @@ export const saveAsTestFile = async (req: Request, res: Response): Promise<void>
         name: testFile.name,
         path: testFile.path,
       },
+      message: counter > 1 ? `File saved as "${finalPath}" (original name was taken)` : undefined,
     });
   } catch (error: any) {
     console.error('Error saving test file:', error);
+    
+    // Better error message for unique constraint violations
+    if (error.code === 'P2002') {
+      res.status(409).json({ 
+        error: 'A test file with this name already exists in this suite. Please use a different name.' 
+      });
+      return;
+    }
+    
     res.status(500).json({ error: error.message || 'Failed to save test file' });
   }
 };
