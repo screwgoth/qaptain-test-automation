@@ -85,71 +85,95 @@ const TestSuiteCard = ({ suite, appId }: TestSuiteCardProps) => {
     }
   };
 
+  const enabledFilesCount = suite.testFiles?.filter((f) => f.isEnabled).length || 0;
+  const canRun = suite.isEnabled && enabledFilesCount > 0;
+
   return (
     <>
       <div className="card">
         <div className="flex justify-between items-start mb-4">
           <div className="flex-1">
-            <div className="flex items-center gap-2">
-              <h3 className="text-xl font-semibold text-gray-900">{suite.name}</h3>
+            <div className="flex items-center gap-3">
+              <h3 className="text-xl font-semibold text-slate-100">{suite.name}</h3>
               <span
-                className={`px-2 py-1 text-xs rounded ${
-                  suite.isEnabled
-                    ? 'bg-green-100 text-green-800'
-                    : 'bg-gray-100 text-gray-800'
+                className={`badge ${
+                  suite.isEnabled ? 'badge-success' : 'badge-default'
                 }`}
               >
                 {suite.isEnabled ? 'Enabled' : 'Disabled'}
               </span>
             </div>
             {suite.description && (
-              <p className="text-gray-600 text-sm mt-1">{suite.description}</p>
+              <p className="text-slate-400 text-sm mt-2">{suite.description}</p>
             )}
           </div>
         </div>
 
-        <div className="space-y-2 text-sm mb-4">
-          <div className="flex items-center text-gray-600">
-            <span className="font-medium mr-2">Files:</span>
-            <span>{suite.testFiles?.length || 0}</span>
+        <div className="grid grid-cols-3 gap-4 mb-4">
+          <div className="bg-slate-800/50 rounded-lg p-3 border border-slate-700/50">
+            <div className="text-xs text-slate-400 mb-1">Test Files</div>
+            <div className="text-2xl font-semibold text-slate-100">
+              {suite.testFiles?.length || 0}
+            </div>
+            <div className="text-xs text-emerald-400 mt-1">
+              {enabledFilesCount} enabled
+            </div>
           </div>
-          <div className="flex items-center text-gray-600">
-            <span className="font-medium mr-2">Browser:</span>
-            <span>{suite.config?.browser || 'chromium'}</span>
+          <div className="bg-slate-800/50 rounded-lg p-3 border border-slate-700/50">
+            <div className="text-xs text-slate-400 mb-1">Browser</div>
+            <div className="text-lg font-semibold text-slate-100 capitalize">
+              {suite.config?.browser || 'chromium'}
+            </div>
           </div>
-          <div className="flex items-center text-gray-600">
-            <span className="font-medium mr-2">Retries:</span>
-            <span>{suite.config?.retries || 0}</span>
+          <div className="bg-slate-800/50 rounded-lg p-3 border border-slate-700/50">
+            <div className="text-xs text-slate-400 mb-1">Retries</div>
+            <div className="text-2xl font-semibold text-slate-100">
+              {suite.config?.retries || 0}
+            </div>
           </div>
         </div>
 
         {/* File List */}
         {isExpanded && suite.testFiles && suite.testFiles.length > 0 && (
-          <div className="mb-4 border-t border-gray-200 pt-4">
-            <h4 className="text-sm font-semibold text-gray-700 mb-2">Test Files:</h4>
+          <div className="mb-4 border-t border-slate-700/50 pt-4">
+            <h4 className="text-sm font-semibold text-slate-300 mb-3 flex items-center gap-2">
+              📁 Test Files
+            </h4>
             <div className="space-y-2">
               {suite.testFiles.map((file) => (
                 <div
                   key={file.id}
-                  className="flex items-center justify-between p-2 bg-gray-50 rounded text-sm"
+                  className="flex items-center justify-between p-3 bg-slate-800/40 rounded-lg border border-slate-700/30 hover:border-slate-600/50 transition-colors"
                 >
-                  <div className="flex items-center gap-2 flex-1">
-                    <input
-                      type="checkbox"
-                      checked={file.isEnabled}
-                      onChange={(e) =>
-                        toggleFileMutation.mutate({
-                          fileId: file.id,
-                          enabled: e.target.checked,
-                        })
-                      }
-                      className="mr-1"
-                    />
-                    <span className="font-mono text-gray-700">{file.name}</span>
+                  <div className="flex items-center gap-3 flex-1">
+                    <label className="flex items-center cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={file.isEnabled}
+                        onChange={(e) =>
+                          toggleFileMutation.mutate({
+                            fileId: file.id,
+                            enabled: e.target.checked,
+                          })
+                        }
+                        className="w-4 h-4 rounded border-slate-600 bg-slate-800 text-primary-500 
+                                 focus:ring-2 focus:ring-primary-500 focus:ring-offset-0 cursor-pointer"
+                      />
+                    </label>
+                    <div className="flex-1">
+                      <div className="font-mono text-sm text-slate-200">{file.name}</div>
+                      {file.description && (
+                        <div className="text-xs text-slate-500 mt-1">{file.description}</div>
+                      )}
+                    </div>
+                    {!file.isEnabled && (
+                      <span className="badge badge-default text-xs">Disabled</span>
+                    )}
                   </div>
                   <button
                     onClick={() => handleDeleteFile(file.id, file.name)}
-                    className="text-red-600 hover:text-red-800 ml-2"
+                    className="ml-3 p-2 text-red-400 hover:text-red-300 hover:bg-red-500/10 rounded-lg transition-colors"
+                    title="Delete file"
                   >
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
@@ -161,44 +185,52 @@ const TestSuiteCard = ({ suite, appId }: TestSuiteCardProps) => {
           </div>
         )}
 
+        {/* Warning when no enabled files */}
+        {suite.isEnabled && enabledFilesCount === 0 && (
+          <div className="mb-4 p-3 bg-amber-500/10 border border-amber-500/30 rounded-lg text-amber-400 text-sm">
+            ⚠️ No test files enabled. Enable at least one file or upload new files to run tests.
+          </div>
+        )}
+
         {/* Actions */}
         <div className="flex flex-wrap gap-2">
           <button
             onClick={() => setIsRunTestOpen(true)}
-            className="btn btn-primary text-sm"
-            disabled={!suite.isEnabled || !suite.testFiles || suite.testFiles.length === 0}
+            className={`btn ${canRun ? 'btn-primary' : 'btn-ghost'}`}
+            disabled={!canRun}
+            title={!canRun ? 'Enable the suite and add test files first' : 'Run all enabled tests'}
           >
-            ▶ Run Tests
+            ▶️ Run Tests {enabledFilesCount > 0 && `(${enabledFilesCount})`}
           </button>
           <button
             onClick={() => setIsRecorderOpen(true)}
-            className="btn btn-secondary text-sm"
+            className="btn btn-secondary"
           >
-            ⚫ Record Test
+            🎬 Record Test
           </button>
           <button
             onClick={() => setIsFileUploadOpen(true)}
-            className="btn btn-secondary text-sm"
+            className="btn btn-secondary"
           >
             📁 Upload Files
           </button>
           <button
             onClick={() => setIsExpanded(!isExpanded)}
-            className="btn btn-secondary text-sm"
+            className="btn btn-ghost"
           >
-            {isExpanded ? 'Hide' : 'Show'} Files
+            {isExpanded ? '🔼 Hide' : '🔽 Show'} Files ({suite.testFiles?.length || 0})
           </button>
           <button
             onClick={() => toggleMutation.mutate(!suite.isEnabled)}
-            className="btn btn-secondary text-sm"
+            className="btn btn-ghost"
           >
-            {suite.isEnabled ? 'Disable' : 'Enable'}
+            {suite.isEnabled ? '⏸️ Disable' : '▶️ Enable'}
           </button>
           <button
             onClick={handleDelete}
-            className="btn btn-secondary text-sm text-red-600 hover:bg-red-50"
+            className="btn btn-ghost text-red-400 hover:text-red-300 hover:bg-red-500/10"
           >
-            Delete
+            🗑️ Delete
           </button>
         </div>
       </div>

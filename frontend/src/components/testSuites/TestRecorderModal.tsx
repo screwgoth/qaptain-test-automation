@@ -290,6 +290,25 @@ const TestRecorderModal = ({ suiteId, appUrl, onClose, onSaved }: TestRecorderMo
           </div>
         </div>
 
+        {/* Help Banner - Headless Recording Explanation */}
+        {status === 'recording' && (
+          <div className="mx-4 mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+            <div className="flex items-start gap-3">
+              <span className="text-2xl">💡</span>
+              <div className="flex-1">
+                <h4 className="font-semibold text-blue-900 mb-1">How to interact with the page:</h4>
+                <ul className="text-sm text-blue-800 space-y-1">
+                  <li>• <strong>Screenshot shows the current page state</strong></li>
+                  <li>• <strong>Use the "Add Action" panel</strong> to interact (click, type, navigate)</li>
+                  <li>• <strong>Enter CSS selectors</strong> for buttons/inputs (e.g., <code className="bg-blue-100 px-1 rounded">#submit-btn</code>)</li>
+                  <li>• Click "Execute Action" to run each interaction</li>
+                  <li>• Use "Refresh" to update the screenshot after each action</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Error message */}
         {error && (
           <div className="mx-4 mt-4 p-3 bg-red-50 border border-red-200 rounded-lg flex items-center justify-between">
