@@ -94,7 +94,7 @@ const TestSuiteCard = ({ suite, appId }: TestSuiteCardProps) => {
         <div className="flex justify-between items-start mb-4">
           <div className="flex-1">
             <div className="flex items-center gap-3">
-              <h3 className="text-xl font-semibold text-slate-100">{suite.name}</h3>
+              <h3 className="text-xl font-semibold text-gray-900">{suite.name}</h3>
               <span
                 className={`badge ${
                   suite.isEnabled ? 'badge-success' : 'badge-default'
@@ -104,30 +104,30 @@ const TestSuiteCard = ({ suite, appId }: TestSuiteCardProps) => {
               </span>
             </div>
             {suite.description && (
-              <p className="text-slate-400 text-sm mt-2">{suite.description}</p>
+              <p className="text-gray-600 text-sm mt-2">{suite.description}</p>
             )}
           </div>
         </div>
 
         <div className="grid grid-cols-3 gap-4 mb-4">
-          <div className="bg-slate-800/50 rounded-lg p-3 border border-slate-700/50">
-            <div className="text-xs text-slate-400 mb-1">Test Files</div>
-            <div className="text-2xl font-semibold text-slate-100">
+          <div className="bg-blue-50 rounded-lg p-3 border border-blue-200">
+            <div className="text-xs text-gray-600 mb-1">Test Files</div>
+            <div className="text-2xl font-semibold text-gray-900">
               {suite.testFiles?.length || 0}
             </div>
-            <div className="text-xs text-emerald-400 mt-1">
+            <div className="text-xs text-emerald-600 mt-1">
               {enabledFilesCount} enabled
             </div>
           </div>
-          <div className="bg-slate-800/50 rounded-lg p-3 border border-slate-700/50">
-            <div className="text-xs text-slate-400 mb-1">Browser</div>
-            <div className="text-lg font-semibold text-slate-100 capitalize">
+          <div className="bg-purple-50 rounded-lg p-3 border border-purple-200">
+            <div className="text-xs text-gray-600 mb-1">Browser</div>
+            <div className="text-lg font-semibold text-gray-900 capitalize">
               {suite.config?.browser || 'chromium'}
             </div>
           </div>
-          <div className="bg-slate-800/50 rounded-lg p-3 border border-slate-700/50">
-            <div className="text-xs text-slate-400 mb-1">Retries</div>
-            <div className="text-2xl font-semibold text-slate-100">
+          <div className="bg-amber-50 rounded-lg p-3 border border-amber-200">
+            <div className="text-xs text-gray-600 mb-1">Retries</div>
+            <div className="text-2xl font-semibold text-gray-900">
               {suite.config?.retries || 0}
             </div>
           </div>
@@ -135,15 +135,15 @@ const TestSuiteCard = ({ suite, appId }: TestSuiteCardProps) => {
 
         {/* File List */}
         {isExpanded && suite.testFiles && suite.testFiles.length > 0 && (
-          <div className="mb-4 border-t border-slate-700/50 pt-4">
-            <h4 className="text-sm font-semibold text-slate-300 mb-3 flex items-center gap-2">
+          <div className="mb-4 border-t border-gray-200 pt-4">
+            <h4 className="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">
               📁 Test Files
             </h4>
             <div className="space-y-2">
               {suite.testFiles.map((file) => (
                 <div
                   key={file.id}
-                  className="flex items-center justify-between p-3 bg-slate-800/40 rounded-lg border border-slate-700/30 hover:border-slate-600/50 transition-colors"
+                  className="flex items-center justify-between p-3 bg-gray-50 rounded-lg border border-gray-200 hover:border-gray-300 transition-colors"
                 >
                   <div className="flex items-center gap-3 flex-1">
                     <label className="flex items-center cursor-pointer">
@@ -156,14 +156,14 @@ const TestSuiteCard = ({ suite, appId }: TestSuiteCardProps) => {
                             enabled: e.target.checked,
                           })
                         }
-                        className="w-4 h-4 rounded border-slate-600 bg-slate-800 text-primary-500 
-                                 focus:ring-2 focus:ring-primary-500 focus:ring-offset-0 cursor-pointer"
+                        className="w-4 h-4 rounded border-gray-300 text-primary-600 
+                                 focus:ring-2 focus:ring-primary-500 cursor-pointer"
                       />
                     </label>
                     <div className="flex-1">
-                      <div className="font-mono text-sm text-slate-200">{file.name}</div>
+                      <div className="font-mono text-sm text-gray-900">{file.name}</div>
                       {file.description && (
-                        <div className="text-xs text-slate-500 mt-1">{file.description}</div>
+                        <div className="text-xs text-gray-500 mt-1">{file.description}</div>
                       )}
                     </div>
                     {!file.isEnabled && (
@@ -172,7 +172,7 @@ const TestSuiteCard = ({ suite, appId }: TestSuiteCardProps) => {
                   </div>
                   <button
                     onClick={() => handleDeleteFile(file.id, file.name)}
-                    className="ml-3 p-2 text-red-400 hover:text-red-300 hover:bg-red-500/10 rounded-lg transition-colors"
+                    className="ml-3 p-2 text-red-600 hover:text-red-700 hover:bg-red-50 rounded-lg transition-colors"
                     title="Delete file"
                   >
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -187,7 +187,7 @@ const TestSuiteCard = ({ suite, appId }: TestSuiteCardProps) => {
 
         {/* Warning when no enabled files */}
         {suite.isEnabled && enabledFilesCount === 0 && (
-          <div className="mb-4 p-3 bg-amber-500/10 border border-amber-500/30 rounded-lg text-amber-400 text-sm">
+          <div className="mb-4 p-3 bg-amber-50 border border-amber-200 rounded-lg text-amber-800 text-sm">
             ⚠️ No test files enabled. Enable at least one file or upload new files to run tests.
           </div>
         )}
@@ -228,7 +228,7 @@ const TestSuiteCard = ({ suite, appId }: TestSuiteCardProps) => {
           </button>
           <button
             onClick={handleDelete}
-            className="btn btn-ghost text-red-400 hover:text-red-300 hover:bg-red-500/10"
+            className="btn btn-ghost text-red-600 hover:text-red-700 hover:bg-red-50"
           >
             🗑️ Delete
           </button>

@@ -80,14 +80,14 @@ const RunTestModal = ({ suite, onClose }: RunTestModalProps) => {
   const enabledFilesCount = suite.testFiles?.filter((f) => f.isEnabled).length || 0;
 
   return (
-    <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-      <div className="card-glass max-w-lg w-full max-h-[90vh] overflow-y-auto">
+    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+      <div className="card-glass max-w-lg w-full max-h-[90vh] overflow-y-auto shadow-xl">
         <div className="p-6">
           <div className="flex justify-between items-center mb-6">
-            <h2 className="text-2xl font-display font-bold text-slate-100">▶️ Run Tests</h2>
+            <h2 className="text-2xl font-display font-bold text-gray-900">▶️ Run Tests</h2>
             <button
               onClick={onClose}
-              className="text-slate-400 hover:text-slate-200 transition-colors p-2 hover:bg-slate-800/50 rounded-lg"
+              className="text-gray-400 hover:text-gray-600 transition-colors p-2 hover:bg-gray-100 rounded-lg"
               disabled={runMutation.isPending}
             >
               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -96,17 +96,17 @@ const RunTestModal = ({ suite, onClose }: RunTestModalProps) => {
             </button>
           </div>
 
-          <div className="mb-6 p-4 bg-primary-500/10 border border-primary-500/30 rounded-xl">
-            <div className="font-semibold text-primary-300 flex items-center gap-2">
+          <div className="mb-6 p-4 bg-primary-50 border border-primary-200 rounded-xl">
+            <div className="font-semibold text-primary-900 flex items-center gap-2">
               🧪 {suite.name}
             </div>
-            <div className="text-sm text-slate-400 mt-2">
+            <div className="text-sm text-gray-700 mt-2">
               {enabledFilesCount} test file{enabledFilesCount !== 1 ? 's' : ''} enabled
             </div>
           </div>
 
           {error && (
-            <div className="mb-6 p-4 bg-red-500/10 border border-red-500/30 rounded-xl text-red-400 text-sm">
+            <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-xl text-red-700 text-sm">
               <div className="font-semibold mb-1">❌ Error</div>
               {error}
             </div>
@@ -165,20 +165,20 @@ const RunTestModal = ({ suite, onClose }: RunTestModalProps) => {
                 max="5"
                 disabled={runMutation.isPending}
               />
-              <p className="text-xs text-slate-500 mt-1">Number of times to retry failed tests</p>
+              <p className="text-xs text-gray-500 mt-1">Number of times to retry failed tests</p>
             </div>
 
-            <div className="space-y-3 p-4 bg-slate-800/30 rounded-xl border border-slate-700/30">
+            <div className="space-y-3 p-4 bg-gray-50 rounded-xl border border-gray-200">
               <label className="flex items-center cursor-pointer group">
                 <input
                   type="checkbox"
                   checked={config.headless}
                   onChange={(e) => setConfig({ ...config, headless: e.target.checked })}
-                  className="w-4 h-4 rounded border-slate-600 bg-slate-800 text-primary-500 
-                           focus:ring-2 focus:ring-primary-500 focus:ring-offset-0 cursor-pointer"
+                  className="w-4 h-4 rounded border-gray-300 text-primary-600 
+                           focus:ring-2 focus:ring-primary-500 cursor-pointer"
                   disabled={runMutation.isPending}
                 />
-                <span className="ml-3 text-sm font-medium text-slate-300 group-hover:text-slate-200">
+                <span className="ml-3 text-sm font-medium text-gray-700 group-hover:text-gray-900">
                   Headless Mode
                 </span>
               </label>
@@ -188,17 +188,17 @@ const RunTestModal = ({ suite, onClose }: RunTestModalProps) => {
                   type="checkbox"
                   checked={config.parallel}
                   onChange={(e) => setConfig({ ...config, parallel: e.target.checked })}
-                  className="w-4 h-4 rounded border-slate-600 bg-slate-800 text-primary-500 
-                           focus:ring-2 focus:ring-primary-500 focus:ring-offset-0 cursor-pointer"
+                  className="w-4 h-4 rounded border-gray-300 text-primary-600 
+                           focus:ring-2 focus:ring-primary-500 cursor-pointer"
                   disabled={runMutation.isPending}
                 />
-                <span className="ml-3 text-sm font-medium text-slate-300 group-hover:text-slate-200">
+                <span className="ml-3 text-sm font-medium text-gray-700 group-hover:text-gray-900">
                   Parallel Execution (4 workers)
                 </span>
               </label>
             </div>
 
-            <div className="flex gap-3 pt-6 border-t border-slate-700/50">
+            <div className="flex gap-3 pt-6 border-t border-gray-200">
               <button
                 type="button"
                 onClick={onClose}

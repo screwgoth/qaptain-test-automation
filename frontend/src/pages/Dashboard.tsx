@@ -67,58 +67,58 @@ const Dashboard = () => {
 
   return (
     <Layout>
-      <div className="space-y-8 animate-fade-in">
+      <div className="space-y-8">
         {/* Header */}
         <div>
-          <h1 className="text-4xl font-display font-bold text-slate-100">
+          <h1 className="text-4xl font-display font-bold text-gray-900">
             Dashboard
           </h1>
-          <p className="text-slate-400 mt-2 text-lg">
+          <p className="text-gray-600 mt-2 text-lg">
             Welcome to Qaptain - Your Playwright test automation platform
           </p>
         </div>
 
-        {/* Stats Cards - Glassmorphism */}
+        {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          <div className="stat-card from-primary-500/10 to-primary-600/5">
+          <div className="stat-card from-primary-600 to-primary-500 bg-gradient-to-br from-primary-50 to-blue-50">
             <div className="flex items-start justify-between">
               <div>
-                <div className="text-sm text-slate-400 font-medium mb-1">Total Apps</div>
-                <div className="text-4xl font-display font-bold text-slate-100">{totalApps}</div>
-                <div className="text-xs text-primary-400 mt-2 font-medium">Active applications</div>
+                <div className="text-sm text-gray-600 font-medium mb-1">Total Apps</div>
+                <div className="text-4xl font-display font-bold text-gray-900">{totalApps}</div>
+                <div className="text-xs text-primary-600 mt-2 font-medium">Active applications</div>
               </div>
               <div className="text-5xl opacity-20">📱</div>
             </div>
           </div>
 
-          <div className="stat-card from-purple-500/10 to-purple-600/5">
+          <div className="stat-card from-purple-600 to-purple-500 bg-gradient-to-br from-purple-50 to-pink-50">
             <div className="flex items-start justify-between">
               <div>
-                <div className="text-sm text-slate-400 font-medium mb-1">Test Suites</div>
-                <div className="text-4xl font-display font-bold text-slate-100">{totalSuites}</div>
-                <div className="text-xs text-purple-400 mt-2 font-medium">Configured suites</div>
+                <div className="text-sm text-gray-600 font-medium mb-1">Test Suites</div>
+                <div className="text-4xl font-display font-bold text-gray-900">{totalSuites}</div>
+                <div className="text-xs text-purple-600 mt-2 font-medium">Configured suites</div>
               </div>
               <div className="text-5xl opacity-20">🧪</div>
             </div>
           </div>
 
-          <div className="stat-card from-emerald-500/10 to-emerald-600/5">
+          <div className="stat-card from-emerald-600 to-emerald-500 bg-gradient-to-br from-emerald-50 to-green-50">
             <div className="flex items-start justify-between">
               <div>
-                <div className="text-sm text-slate-400 font-medium mb-1">Recent Runs</div>
-                <div className="text-4xl font-display font-bold text-slate-100">{recentRunsCount}</div>
-                <div className="text-xs text-emerald-400 mt-2 font-medium">Last 10 executions</div>
+                <div className="text-sm text-gray-600 font-medium mb-1">Recent Runs</div>
+                <div className="text-4xl font-display font-bold text-gray-900">{recentRunsCount}</div>
+                <div className="text-xs text-emerald-600 mt-2 font-medium">Last 10 executions</div>
               </div>
               <div className="text-5xl opacity-20">▶️</div>
             </div>
           </div>
 
-          <div className="stat-card from-amber-500/10 to-amber-600/5">
+          <div className="stat-card from-amber-600 to-amber-500 bg-gradient-to-br from-amber-50 to-orange-50">
             <div className="flex items-start justify-between">
               <div>
-                <div className="text-sm text-slate-400 font-medium mb-1">Pass Rate</div>
-                <div className="text-4xl font-display font-bold text-slate-100">{passRate}%</div>
-                <div className="text-xs text-amber-400 mt-2 font-medium">Success percentage</div>
+                <div className="text-sm text-gray-600 font-medium mb-1">Pass Rate</div>
+                <div className="text-4xl font-display font-bold text-gray-900">{passRate}%</div>
+                <div className="text-xs text-amber-600 mt-2 font-medium">Success percentage</div>
               </div>
               <div className="text-5xl opacity-20">✅</div>
             </div>
@@ -127,7 +127,7 @@ const Dashboard = () => {
 
         {/* Quick Actions */}
         <div className="card">
-          <h2 className="text-2xl font-display font-semibold text-slate-100 mb-6">Quick Actions</h2>
+          <h2 className="text-2xl font-display font-semibold text-gray-900 mb-6">Quick Actions</h2>
           <div className="flex flex-wrap gap-3">
             <Link to="/apps" className="btn btn-primary">
               📱 View All Apps
@@ -144,7 +144,7 @@ const Dashboard = () => {
         {/* Recent Apps */}
         <div className="card">
           <div className="flex justify-between items-center mb-6">
-            <h2 className="text-2xl font-display font-semibold text-slate-100">Your Apps</h2>
+            <h2 className="text-2xl font-display font-semibold text-gray-900">Your Apps</h2>
             <Link to="/apps" className="link text-sm font-medium">
               View All →
             </Link>
@@ -157,7 +157,7 @@ const Dashboard = () => {
           ) : apps.length === 0 ? (
             <div className="text-center py-12">
               <span className="text-7xl opacity-30">📱</span>
-              <p className="mt-4 text-slate-400 text-lg">No apps yet. Create your first app to get started!</p>
+              <p className="mt-4 text-gray-600 text-lg">No apps yet. Create your first app to get started!</p>
               <Link to="/apps" className="mt-6 btn btn-primary inline-flex">
                 + Create App
               </Link>
@@ -168,14 +168,14 @@ const Dashboard = () => {
                 <Link
                   key={app.id}
                   to={`/apps/${app.id}`}
-                  className="group p-5 bg-slate-800/40 border border-slate-700/50 rounded-xl 
-                           hover:border-primary-500/50 hover:bg-slate-800/60 
-                           transition-all duration-200 hover:shadow-glass"
+                  className="group p-5 bg-gray-50 border border-gray-200 rounded-xl 
+                           hover:border-primary-300 hover:bg-white hover:shadow-md
+                           transition-all duration-200"
                 >
-                  <h3 className="font-semibold text-slate-100 group-hover:text-primary-400 transition-colors">
+                  <h3 className="font-semibold text-gray-900 group-hover:text-primary-600 transition-colors">
                     {app.name}
                   </h3>
-                  <div className="mt-3 flex items-center gap-2 text-sm text-slate-400">
+                  <div className="mt-3 flex items-center gap-2 text-sm text-gray-600">
                     <span className="flex items-center gap-1">
                       🧪 {app.testSuites?.length || 0} suites
                     </span>
@@ -188,7 +188,7 @@ const Dashboard = () => {
 
         {/* Recent Test Runs */}
         <div className="card">
-          <h2 className="text-2xl font-display font-semibold text-slate-100 mb-6">Recent Test Runs</h2>
+          <h2 className="text-2xl font-display font-semibold text-gray-900 mb-6">Recent Test Runs</h2>
 
           {runsLoading ? (
             <div className="flex justify-center py-12">
@@ -197,7 +197,7 @@ const Dashboard = () => {
           ) : recentRuns.length === 0 ? (
             <div className="text-center py-12">
               <span className="text-7xl opacity-30">🧪</span>
-              <p className="mt-4 text-slate-400 text-lg">No test runs yet. Run your first test to see results here!</p>
+              <p className="mt-4 text-gray-600 text-lg">No test runs yet. Run your first test to see results here!</p>
             </div>
           ) : (
             <div className="table-container">
@@ -223,12 +223,12 @@ const Dashboard = () => {
                       </td>
                       <td className="font-mono font-semibold">{run.totalTests}</td>
                       <td>
-                        <span className="text-emerald-400 font-semibold font-mono">{run.passed || 0}</span>
+                        <span className="text-emerald-600 font-semibold font-mono">{run.passed || 0}</span>
                       </td>
                       <td>
-                        <span className="text-red-400 font-semibold font-mono">{run.failed || 0}</span>
+                        <span className="text-red-600 font-semibold font-mono">{run.failed || 0}</span>
                       </td>
-                      <td className="text-slate-400">{formatDate(run.createdAt)}</td>
+                      <td className="text-gray-600">{formatDate(run.createdAt)}</td>
                       <td>
                         <Link to={`/test-runs/${run.id}`} className="link text-sm">
                           View Details →
