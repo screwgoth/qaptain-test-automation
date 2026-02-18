@@ -56,6 +56,12 @@ const RunTestModal = ({ suite, onClose }: RunTestModalProps) => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    e.stopPropagation();
+    
+    console.log('=== RUN TESTS FORM SUBMITTED ===');
+    console.log('Suite:', suite.name, 'ID:', suite.id);
+    console.log('Config:', config);
+    
     setError('');
 
     // Get environment ID if selected
@@ -73,8 +79,15 @@ const RunTestModal = ({ suite, onClose }: RunTestModalProps) => {
       video: 'on-failure',
     };
 
-    console.log('Starting test run with config:', payload);
-    runMutation.mutate(payload);
+    console.log('=== SUBMITTING TEST RUN ===');
+    console.log('Payload:', JSON.stringify(payload, null, 2));
+    
+    try {
+      runMutation.mutate(payload);
+    } catch (err) {
+      console.error('Error in runMutation.mutate:', err);
+      setError(String(err));
+    }
   };
 
   const enabledFilesCount = suite.testFiles?.filter((f) => f.isEnabled).length || 0;

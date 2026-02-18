@@ -258,9 +258,11 @@ const TestSuiteCard = ({ suite, appId }: TestSuiteCardProps) => {
         <TestRecorderModal
           suiteId={suite.id}
           onClose={() => setIsRecorderOpen(false)}
-          onSaved={() => {
-            setIsRecorderOpen(false);
-            queryClient.invalidateQueries({ queryKey: ['apps', appId] });
+          onSaved={async () => {
+            console.log('Test file saved, invalidating queries for app:', appId);
+            // Invalidate queries to refetch the app data (including test files)
+            await queryClient.invalidateQueries({ queryKey: ['apps', appId] });
+            // Don't close here - let the modal close itself after this completes
           }}
         />
       )}

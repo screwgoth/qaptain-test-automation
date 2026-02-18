@@ -233,13 +233,23 @@ const TestRecorderModal = ({ suiteId, appUrl, onClose, onSaved }: TestRecorderMo
 
     try {
       setSaving(true);
-      await api.post(`/api/recorder/${sessionId}/save`, {
+      const response = await api.post(`/api/recorder/${sessionId}/save`, {
         suiteId,
         fileName,
       });
-      onSaved?.();
+      console.log('Test file saved successfully:', response.data);
+      
+      // Call onSaved callback BEFORE closing (so parent can invalidate queries)
+      if (onSaved) {
+        await onSaved();
+      }
+      
+      // Small delay to ensure query invalidation completes
+      await new Promise(resolve => setTimeout(resolve, 100));
+      
       onClose();
     } catch (err: any) {
+      console.error('Failed to save test file:', err);
       setError(err.response?.data?.error || 'Failed to save test');
     } finally {
       setSaving(false);
